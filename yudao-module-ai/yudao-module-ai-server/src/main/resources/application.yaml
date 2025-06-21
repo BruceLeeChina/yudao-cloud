@@ -112,14 +112,14 @@ spring:
       qdrant:
         initialize-schema: true
         collection-name: knowledge_segment # Qdrant 中向量集合的名称：用于存储向量数据的集合标识符，所有相关的向量操作都会在这个集合中进行
-        host: 127.0.0.1
+        host: 192.168.56.14
         port: 6334
       milvus:
         initialize-schema: true
         database-name: default # Milvus 中数据库的名称
         collection-name: knowledge_segment # Milvus 中集合的名称：用于存储向量数据的集合标识符，所有相关的向量操作都会在这个集合中进行
         client:
-          host: 127.0.0.1
+          host: 192.168.56.14
           port: 19530
     qianfan: # 文心一言
       api-key: x0cuLZ7XsaTCU08vuJWO87Lg
@@ -134,7 +134,7 @@ spring:
         endpoint: https://eastusprejade.openai.azure.com
         api-key: xxx
     ollama:
-      base-url: http://127.0.0.1:11434
+      base-url: http://192.168.56.14:11434
       chat:
         model: llama3
     stabilityai:
@@ -182,7 +182,7 @@ yudao:
     suno:
       enable: true
   #    base-url: https://suno-55ishh05u-status2xxs-projects.vercel.app
-      base-url: http://127.0.0.1:3001
+      base-url: http://192.168.56.14:3001
 
 --- #################### 芋道相关配置 ####################
 

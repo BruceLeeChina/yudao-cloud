@@ -1,0 +1,230 @@
+services:
+  minio:
+    image: minio/minio:RELEASE.2025-05-24T17-08-30Z
+    container_name: mw-minio
+    environment:
+      TZ: Asia/Shanghai  # 所有容器统一时区
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - ./middleware/minio/data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: server /data --console-address ":9001"
+    restart: unless-stopped
+    networks:
+      - yudao-network
+  #  nacos:
+  #    image: emergency-nacos:1.0.0
+  #    container_name: mw-nacos-postgresql
+  #    volumes:
+  #      - ./nacos/standalone-logs/:/home/nacos/logs
+  #      - ./nacos/init.d/application.properties:/home/nacos/conf/application.properties
+  #    ports:
+  #      - "8848:8848"
+  #      - "9848:9848"
+  #    depends_on:
+  #      - postgresql
+  #    restart: unless-stopped
+  #    networks:
+  #      - yudao-network
+  onlyoffice:
+    image: onlyoffice/documentserver:21.12
+    container_name: mw-onlyoffice
+    restart: unless-stopped
+    ports:
+      - "9997:80"
+      - "9443:443"
+    volumes:
+      - ./middleware/onlyoffice/nginx/nginx:/etc/nginx
+      - ./middleware/onlyoffice/nginx/onlyoffice:/etc/onlyoffice
+      #- ./middleware/onlyoffice/logs:/var/log/onlyoffice:ro
+      #- ./middleware/onlyoffice/data:/var/www/onlyoffice/Data:ro
+      #- ./middleware/onlyoffice/postgresql:/var/lib/postgresql:ro
+      #- ./middleware/onlyoffice/redis:/var/lib/redis:ro
+      #- ./middleware/onlyoffice/rabbitmq:/var/lib/rabbitmq:ro
+      #- ./middleware/onlyoffice/onlyoffice:/var/lib/onlyoffice:ro
+      #- ./middleware/onlyoffice/ssl:/etc/onlyoffice/documentserver/ssl:rw
+    environment:
+      - TZ=Asia/Shanghai
+      - JWT_SECRET=nJvzNopZyKEQGmLJdJpdjSnUn7ap9Mkt
+    # 资源限制（可选）
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+          cpus: '4'
+    shm_size: '512m'
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    networks:
+      - yudao-network
+
+  mysql:
+    image: mysql:5.7.44
+    container_name: mw-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      TZ: Asia/Shanghai  # 所有容器统一时区
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DEFAULT_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - ./middleware/mysql/data:/var/lib/mysql
+      - ./middleware/mysql/scripts:/docker-entrypoint-initdb.d
+      - ./middleware/mysql/conf/my.cnf:/etc/mysql/conf.d/my.cnf
+    restart: unless-stopped
+    networks:
+      - yudao-network
+
+  nacos:
+    image: nacos/nacos-server:v2.4.3
+    container_name: mw-nacos
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+      - "9849:9849"
+      - "18848:8080"
+    environment:
+      - TZ=Asia/Shanghai  # 所有容器统一时区
+      - MODE=standalone
+      - SPRING_DATASOURCE_PLATFORM=mysql
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/nacos?characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true
+      - SPRING_DATASOURCE_USERNAME=${MYSQL_NACOS_USER}
+      - SPRING_DATASOURCE_PASSWORD=${MYSQL_NACOS_PASSWORD}
+      - NACOS_AUTH_ENABLE=false
+      - NACOS_AUTH_IDENTITY_KEY=nacos
+      - NACOS_AUTH_IDENTITY_VALUE=nacos
+      - NACOS_AUTH_TOKEN=Y0m/qwplCBWREPrgrATflXSgA+gm1gNHsFdf5x9SyhU=
+      - MYSQL_SERVICE_HOST=mysql
+      - MYSQL_SERVICE_USER=${MYSQL_NACOS_USER}
+      - MYSQL_SERVICE_PASSWORD=${MYSQL_NACOS_PASSWORD}
+      - MYSQL_SERVICE_DB_NAME=${MYSQL_NACOS_DATABASE}
+    volumes:
+      - ./middleware/nacos/logs:/home/nacos/logs
+    depends_on:
+      - mysql
+    restart: unless-stopped
+    networks:
+      - yudao-network
+
+
+  redis:
+    image: redis:8.0.1
+    container_name: mw-redis
+    environment:
+      TZ: Asia/Shanghai  # 所有容器统一时区
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    volumes:
+      - ./middleware/redis/conf/redis.conf:/usr/local/etc/redis/redis.conf
+      - ./middleware/redis/data:/data
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    restart: unless-stopped
+    networks:
+      - yudao-network
+
+  kafka:
+    image: bitnami/kafka:4.0.0
+    container_name: mw-kafka
+    environment:
+      - TZ=Asia/Shanghai  # 所有容器统一时区
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      # volumes:
+      #- ./middleware/kafka/data:/bitnami/kafka
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    restart: unless-stopped
+    networks:
+      - yudao-network
+
+  openresty:
+    image: openresty/openresty:1.25.3.2-4-jammy-amd64
+    container_name: mw-openresty
+    environment:
+      - TZ=Asia/Shanghai  # 所有容器统一时区
+      # volumes:
+      #- ./middleware/openresty/conf.d:/usr/local/openresty/nginx/conf/conf.d
+      #- ./middleware/openresty/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf
+      #- ./middleware/openresty/html:/usr/local/openresty/nginx/html
+      #- ./middleware/openresty/static:/usr/local/openresty/nginx/static
+    ports:
+      - "80:80"
+    command: [ "nginx", "-g", "daemon off;" ]
+    restart: unless-stopped
+    networks:
+      - yudao-network
+
+  xxljob:
+    image: xuxueli/xxl-job-admin:3.1.0
+    container_name: mw-xxljob
+    environment:
+      - TZ=Asia/Shanghai  # 所有容器统一时区
+      - XXL_JOB_ADMIN_ACCESS_TOKEN=${XXL_JOB_ADMIN_ACCESS_TOKEN}
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/${MYSQL_XXL_JOB_DATABASE}?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
+      - SPRING_DATASOURCE_USERNAME=${MYSQL_XXL_JOB_USER}
+      - SPRING_DATASOURCE_PASSWORD=${MYSQL_XXL_JOB_PASSWORD}
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
+    # volumes:
+    ports:
+      - "8180:8080"
+    restart: unless-stopped
+    depends_on:
+      - mysql
+    networks:
+      - yudao-network
+
+  tdengine:
+    image: tdengine/tdengine:3.3.6.9
+    container_name: mw-tdengine
+    hostname: tdengine
+    environment:
+      TZ: Asia/Shanghai  # 所有容器统一时区
+      TAOS_FQDN: "tdengine"
+      TAOS_FIRST_EP: "tdengine:6030"
+    ports:
+      - "6030:6030"
+      - "6041:6041"
+      # - "6043-6049:6043-6049"
+    volumes:
+      - ./middleware/tdengine/taos:/var/lib/taos
+      - ./middleware/tdengine/log:/var/log/taos
+      - ./middleware/tdengine/init:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+    networks:
+      - yudao-network
+
+  rabbitmq:
+    image: rabbitmq:4.1.0-management
+    container_name: mw-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      TZ: Asia/Shanghai  # 所有容器统一时区
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+      RABBITMQ_ERLANG_COOKIE: "secret_cookie"
+    volumes:
+      - ./middleware/rabbitmq:/var/lib/rabbitmq
+    networks:
+      - yudao-network
+    restart: always
+
+
+networks:
+  yudao-network:
+    driver: bridge
