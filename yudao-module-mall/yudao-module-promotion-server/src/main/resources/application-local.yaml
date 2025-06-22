@@ -108,7 +108,7 @@ xxl:
   job:
     enabled: false # 是否开启调度中心，默认为 true 开启
     admin:
-      addresses: http://192.168.56.14:9090/xxl-job-admin # 调度中心部署跟地址
+      addresses: http://192.168.56.14:8180/xxl-job-admin # 调度中心部署跟地址
 
 --- #################### 服务保障相关配置 ####################
 
