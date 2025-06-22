@@ -17,10 +17,10 @@ public class MemberUserRespVO extends MemberUserBaseVO {
     @Schema(description = "编号", requiredMode = Schema.RequiredMode.REQUIRED, example = "23788")
     private Long id;
 
-    @Schema(description = "注册 IP", requiredMode = Schema.RequiredMode.REQUIRED, example = "127.0.0.1")
+    @Schema(description = "注册 IP", requiredMode = Schema.RequiredMode.REQUIRED, example = "192.168.56.14")
     private String registerIp;
 
-    @Schema(description = "最后登录IP", requiredMode = Schema.RequiredMode.REQUIRED, example = "127.0.0.1")
+    @Schema(description = "最后登录IP", requiredMode = Schema.RequiredMode.REQUIRED, example = "192.168.56.14")
     private String loginIp;
 
     @Schema(description = "最后登录时间", requiredMode = Schema.RequiredMode.REQUIRED)

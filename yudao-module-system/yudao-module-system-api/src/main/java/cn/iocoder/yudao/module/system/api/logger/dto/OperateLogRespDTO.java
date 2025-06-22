@@ -41,7 +41,7 @@ public class OperateLogRespDTO implements VO {
     private String requestMethod;
     @Schema(description = "请求地址", requiredMode = Schema.RequiredMode.REQUIRED, example = "/order/get")
     private String requestUrl;
-    @Schema(description = "用户 IP", requiredMode = Schema.RequiredMode.REQUIRED, example = "127.0.0.1")
+    @Schema(description = "用户 IP", requiredMode = Schema.RequiredMode.REQUIRED, example = "192.168.56.14")
     private String userIp;
     @Schema(description = "浏览器 UserAgent", requiredMode = Schema.RequiredMode.REQUIRED, example = "Mozilla/5.0")
     private String userAgent;

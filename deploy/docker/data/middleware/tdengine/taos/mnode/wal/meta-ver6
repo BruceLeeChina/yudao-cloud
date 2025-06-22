@@ -1,0 +1,27 @@
+{
+	"meta":	{
+		"firstVer":	"0",
+		"snapshotVer":	"212",
+		"commitVer":	"212",
+		"lastVer":	"267"
+	},
+	"files":	[{
+			"firstVer":	"0",
+			"lastVer":	"12",
+			"createTs":	"1750303509",
+			"closeTs":	"1750303510",
+			"fileSize":	"23026"
+		}, {
+			"firstVer":	"13",
+			"lastVer":	"212",
+			"createTs":	"1750303510",
+			"closeTs":	"1750328201",
+			"fileSize":	"325462"
+		}, {
+			"firstVer":	"213",
+			"lastVer":	"267",
+			"createTs":	"1750328201",
+			"closeTs":	"-1",
+			"fileSize":	"47854"
+		}]
+}

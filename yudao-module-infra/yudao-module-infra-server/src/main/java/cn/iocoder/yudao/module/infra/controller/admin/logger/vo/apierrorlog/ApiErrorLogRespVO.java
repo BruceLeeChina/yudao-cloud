@@ -48,7 +48,7 @@ public class ApiErrorLogRespVO {
     @ExcelProperty("请求参数")
     private String requestParams;
 
-    @Schema(description = "用户 IP", requiredMode = Schema.RequiredMode.REQUIRED, example = "127.0.0.1")
+    @Schema(description = "用户 IP", requiredMode = Schema.RequiredMode.REQUIRED, example = "192.168.56.14")
     @ExcelProperty("用户 IP")
     private String userIp;
 

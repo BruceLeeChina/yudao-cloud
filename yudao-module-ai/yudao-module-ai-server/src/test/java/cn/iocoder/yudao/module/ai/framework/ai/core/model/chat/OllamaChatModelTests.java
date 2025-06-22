@@ -23,7 +23,7 @@ import java.util.List;
 public class OllamaChatModelTests {
 
     private final OllamaChatModel chatModel = OllamaChatModel.builder()
-            .ollamaApi(new OllamaApi("http://127.0.0.1:11434")) // Ollama 服务地址
+            .ollamaApi(new OllamaApi("http://192.168.56.14:11434")) // Ollama 服务地址
             .defaultOptions(OllamaOptions.builder()
 //                    .model("qwen") // 模型（https://ollama.com/library/qwen）
                     .model("deepseek-r1") // 模型（https://ollama.com/library/deepseek-r1）

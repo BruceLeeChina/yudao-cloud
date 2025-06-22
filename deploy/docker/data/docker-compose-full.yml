@@ -1,0 +1,456 @@
+services:
+  postgresql:
+    image: postgres:17.5
+    container_name: mw-postgresql
+    environment:
+      TZ: Asia/Shanghai  # 所有容器统一时区
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      #- ./middleware/postgresql/pg_data:/var/lib/postgresql/data
+      - ./middleware/postgresql/tmp:/tmp/tmp
+      - ./middleware/postgresql/init-scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - yudao-network
+
+  minio:
+    image: minio/minio:RELEASE.2025-05-24T17-08-30Z
+    container_name: mw-minio
+    environment:
+      TZ: Asia/Shanghai  # 所有容器统一时区
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - ./middleware/minio/data:/data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: server /data --console-address ":9001"
+    restart: unless-stopped
+    networks:
+      - yudao-network
+  #  nacos:
+  #    image: emergency-nacos:1.0.0
+  #    container_name: mw-nacos-postgresql
+  #    volumes:
+  #      - ./nacos/standalone-logs/:/home/nacos/logs
+  #      - ./nacos/init.d/application.properties:/home/nacos/conf/application.properties
+  #    ports:
+  #      - "8848:8848"
+  #      - "9848:9848"
+  #    depends_on:
+  #      - postgresql
+  #    restart: unless-stopped
+  #    networks:
+  #      - yudao-network
+  mysql:
+    image: mysql:5.7.44
+    container_name: mw-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      TZ: Asia/Shanghai  # 所有容器统一时区
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DEFAULT_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - ./middleware/mysql/data:/var/lib/mysql
+      - ./middleware/mysql/scripts:/docker-entrypoint-initdb.d
+      - ./middleware/mysql/conf/my.cnf:/etc/mysql/conf.d/my.cnf
+    restart: unless-stopped
+    networks:
+      - yudao-network
+
+  nacos:
+    image: nacos/nacos-server:v2.4.3
+    container_name: mw-nacos
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+      - "9849:9849"
+      - "18848:8080"
+    environment:
+      - TZ=Asia/Shanghai  # 所有容器统一时区
+      - MODE=standalone
+      - SPRING_DATASOURCE_PLATFORM=mysql
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/nacos?characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true
+      - SPRING_DATASOURCE_USERNAME=${MYSQL_NACOS_USER}
+      - SPRING_DATASOURCE_PASSWORD=${MYSQL_NACOS_PASSWORD}
+      - NACOS_AUTH_ENABLE=false
+      - NACOS_AUTH_IDENTITY_KEY=nacos
+      - NACOS_AUTH_IDENTITY_VALUE=nacos
+      - NACOS_AUTH_TOKEN=Y0m/qwplCBWREPrgrATflXSgA+gm1gNHsFdf5x9SyhU=
+      - MYSQL_SERVICE_HOST=mysql
+      - MYSQL_SERVICE_USER=${MYSQL_NACOS_USER}
+      - MYSQL_SERVICE_PASSWORD=${MYSQL_NACOS_PASSWORD}
+      - MYSQL_SERVICE_DB_NAME=${MYSQL_NACOS_DATABASE}
+    volumes:
+      - ./middleware/nacos/logs:/home/nacos/logs
+    depends_on:
+      - mysql
+    restart: unless-stopped
+    networks:
+      - yudao-network
+
+
+  redis:
+    image: redis:8.0.1
+    container_name: mw-redis
+    environment:
+      TZ: Asia/Shanghai  # 所有容器统一时区
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    volumes:
+      - ./middleware/redis/conf/redis.conf:/usr/local/etc/redis/redis.conf
+      - ./middleware/redis/data:/data
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    restart: unless-stopped
+    networks:
+      - yudao-network
+
+  kafka:
+    image: bitnami/kafka:4.0.0
+    container_name: mw-kafka
+    environment:
+      - TZ=Asia/Shanghai  # 所有容器统一时区
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      # volumes:
+      #- ./middleware/kafka/data:/bitnami/kafka
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    restart: unless-stopped
+    networks:
+      - yudao-network
+  kafka-ui:
+    image: provectuslabs/kafka-ui:v0.7.2
+    container_name: mw-kafka-ui
+    environment:
+      TZ: Asia/Shanghai  # 所有容器统一时区
+      KAFKA_CLUSTERS_0_NAME: local-cluster
+      KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS: kafka:9092
+    # volumes:
+    ports:
+      - "9094:8080"
+    restart: unless-stopped
+    depends_on:
+      - kafka
+    networks:
+      - yudao-network
+
+  onlyoffice:
+    image: onlyoffice/documentserver:8.3.3
+    container_name: mw-onlyoffice
+    restart: unless-stopped
+    ports:
+      - "9997:80"
+      - "9443:443"
+    volumes:
+      - ./middleware/onlyoffice/nginx/nginx:/etc/nginx
+      - ./middleware/onlyoffice/nginx/onlyoffice:/etc/onlyoffice
+      #- ./middleware/onlyoffice/logs:/var/log/onlyoffice:ro
+      #- ./middleware/onlyoffice/data:/var/www/onlyoffice/Data:ro
+      #- ./middleware/onlyoffice/postgresql:/var/lib/postgresql:ro
+      #- ./middleware/onlyoffice/redis:/var/lib/redis:ro
+      #- ./middleware/onlyoffice/rabbitmq:/var/lib/rabbitmq:ro
+      #- ./middleware/onlyoffice/onlyoffice:/var/lib/onlyoffice:ro
+      #- ./middleware/onlyoffice/ssl:/etc/onlyoffice/documentserver/ssl:rw
+    environment:
+      - TZ=Asia/Shanghai
+      - JWT_SECRET=nJvzNopZyKEQGmLJdJpdjSnUn7ap9Mkt
+    # 资源限制（可选）
+    deploy:
+      resources:
+        limits:
+          memory: 8G
+          cpus: '4'
+    networks:
+      - yudao-network
+
+  openresty:
+    image: openresty/openresty:1.25.3.2-4-jammy-amd64
+    container_name: mw-openresty
+    environment:
+      - TZ=Asia/Shanghai  # 所有容器统一时区
+      # volumes:
+      #- ./middleware/openresty/conf.d:/usr/local/openresty/nginx/conf/conf.d
+      #- ./middleware/openresty/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf
+      #- ./middleware/openresty/html:/usr/local/openresty/nginx/html
+      #- ./middleware/openresty/static:/usr/local/openresty/nginx/static
+    ports:
+      - "80:80"
+    command: [ "nginx", "-g", "daemon off;" ]
+    restart: unless-stopped
+    networks:
+      - yudao-network
+
+  elasticsearch:
+    image: elasticsearch:7.17.28
+    container_name: mw-elasticsearch
+    environment:
+      - TZ=Asia/Shanghai  # 所有容器统一时区
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - xpack.security.enabled=true
+      - xpack.security.http.ssl.enabled=false
+      - xpack.security.transport.ssl.enabled=false
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      # volumes:
+      #- ./middleware/elasticsearch/data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    restart: unless-stopped
+    networks:
+      - yudao-network
+
+  kibana:
+    image: kibana:7.17.28
+    container_name: mw-kibana
+    environment:
+      - TZ=Asia/Shanghai  # 所有容器统一时区
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=${ELASTIC_USERNAME}
+      - ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+      # volumes:
+      #- ./kibana/config:/usr/share/kibana/config
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
+    networks:
+      - yudao-network
+
+  skywalking:
+    image: apache/skywalking-oap-server:10.2.0
+    container_name: mw-skywalking-oap
+    environment:
+      - TZ=Asia/Shanghai  # 所有容器统一时区
+      - SW_STORAGE=elasticsearch
+      - SW_STORAGE_ES_CLUSTER_NODES=elasticsearch:9200
+      - SW_ES_USER=${SKYWALKING_ES_USER}
+      - SW_ES_PASSWORD=${SKYWALKING_ES_PASSWORD}
+      - SW_LOGGING_LEVEL=INFO
+      - TZ=Asia/Shanghai
+      # volumes:
+      #- ./middleware/skywalking/config:/skywalking/config
+      #- ./middleware/skywalking/logs:/skywalking/logs
+    ports:
+      - "11800:11800"
+      - "12800:12800"
+    depends_on:
+      - elasticsearch
+    restart: unless-stopped
+    networks:
+      - yudao-network
+
+  skywalking-ui:
+    image: apache/skywalking-ui:10.2.0
+    container_name: mw-skywalking-ui
+    environment:
+      - TZ=Asia/Shanghai  # 所有容器统一时区
+      - SW_OAP_ADDRESS=http://skywalking:12800
+      - TZ=Asia/Shanghai
+    ports:
+      - "18080:8080"
+    restart: unless-stopped
+    networks:
+      - yudao-network
+
+  mongodb:
+    image: mongo:4.4.29
+    container_name: mw-mongodb
+    environment:
+      TZ: Asia/Shanghai  # 所有容器统一时区
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      # volumes:
+      #- ./middleware/mongodb/data:/data/db
+      #- ./middleware/mongodb/config:/data/configdb
+    ports:
+      - "27017:27017"
+    command: mongod --auth
+    restart: unless-stopped
+    networks:
+      - yudao-network
+
+  # account and password: [sentinel sentinel]
+  sentinel:
+    image: bladex/sentinel-dashboard:1.8.8
+    container_name: mw-sentinel
+    environment:
+      TZ: Asia/Shanghai  # 所有容器统一时区
+    # volumes:
+    ports:
+      - "8858:8858"
+    restart: unless-stopped
+    networks:
+      - yudao-network
+
+  seata:
+    image: seataio/seata-server:1.8.0.2
+    container_name: mw-seata
+    environment:
+      - TZ=Asia/Shanghai  # 所有容器统一时区
+      - SEATA_CONFIG_NAME=file:/root/seata-config
+      - SEATA_PORT=8091
+      - SEATA_REGISTRY_TYPE=file
+      - logging.level.io.seata=DEBUG
+    volumes:
+      - ./middleware/seata/seata-config:/root/seata-config
+    ports:
+      - "7091:7091"
+      - "8091:8091"
+    restart: unless-stopped
+    networks:
+      - yudao-network
+    expose:
+      - 8091
+      - 7091
+
+  xxljob:
+    image: xuxueli/xxl-job-admin:3.1.0
+    container_name: mw-xxljob
+    environment:
+      - TZ=Asia/Shanghai  # 所有容器统一时区
+      - XXL_JOB_ADMIN_ACCESS_TOKEN=${XXL_JOB_ADMIN_ACCESS_TOKEN}
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/${MYSQL_XXL_JOB_DATABASE}?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
+      - SPRING_DATASOURCE_USERNAME=${MYSQL_XXL_JOB_USER}
+      - SPRING_DATASOURCE_PASSWORD=${MYSQL_XXL_JOB_PASSWORD}
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
+    # volumes:
+    ports:
+      - "8180:8080"
+    restart: unless-stopped
+    depends_on:
+      - mysql
+    networks:
+      - yudao-network
+
+  tdengine:
+    image: tdengine/tdengine:3.3.6.9
+    container_name: mw-tdengine
+    hostname: tdengine
+    environment:
+      TZ: Asia/Shanghai  # 所有容器统一时区
+      TAOS_FQDN: "tdengine"
+      TAOS_FIRST_EP: "tdengine:6030"
+    ports:
+      - "6030:6030"
+      - "6041:6041"
+      # - "6043-6049:6043-6049"
+    volumes:
+      - ./middleware/tdengine/taos:/var/lib/taos
+      - ./middleware/tdengine/log:/var/log/taos
+    restart: unless-stopped
+    networks:
+      - yudao-network
+
+  grafana:
+    image: grafana/grafana:12.0.1
+    container_name: mw-grafana
+    environment:
+      TZ: Asia/Shanghai
+      # 设置管理员用户名
+      GF_SECURITY_ADMIN_USER: ${GF_SECURITY_ADMIN_USER}
+      # 设置管理员密码
+      GF_SECURITY_ADMIN_PASSWORD: ${GF_SECURITY_ADMIN_PASSWORD}
+      # 禁用初始管理员创建（使用自定义账户）
+      GF_SECURITY_DISABLE_INITIAL_ADMIN_CREATION: "true"
+      GF_INSTALL_PLUGINS: tdengine-datasource  # 自动安装插件
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./middleware/grafana/data:/var/lib/grafana  # 建议取消注释以持久化数据
+    depends_on:
+      - tdengine
+    networks:
+      - yudao-network
+
+  rabbitmq:
+    image: rabbitmq:4.1.0-management
+    container_name: mw-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      TZ: Asia/Shanghai  # 所有容器统一时区
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+      RABBITMQ_ERLANG_COOKIE: "secret_cookie"
+    volumes:
+      - ./middleware/rabbitmq:/var/lib/rabbitmq
+    networks:
+      - yudao-network
+    restart: always
+
+
+  namesrv:
+    image: apache/rocketmq:5.3.3
+    container_name: mw-rocketmq-namesrv
+    command: sh mqnamesrv
+    ports:
+      - "9876:9876"
+    volumes:
+      - ./middleware/rocketmq/namesrv/logs:/home/rocketmq/logs
+      - ./middleware/rocketmq/namesrv/store:/home/rocketmq/store
+    environment:
+      TZ: Asia/Shanghai  # 所有容器统一时区
+      JAVA_OPT_EXT: " -Xms512m -Xmx512m -Xmn256m"
+    restart: always
+
+  broker:
+    image: apache/rocketmq:5.3.3
+    container_name: mw-rocketmq-broker
+    command: sh mqbroker -n namesrv:9876 -c ../conf/broker.conf
+    ports:
+      - "10909:10909"
+      - "10911:10911"
+      - "10912:10912"
+    volumes:
+      - ./middleware/rocketmq/broker/logs:/home/rocketmq/logs
+      - ./middleware/rocketmq/broker/store:/home/rocketmq/store
+      - ./middleware/rocketmq/broker/conf/broker.conf:/home/rocketmq/rocketmq-5.3.3/conf/broker.conf
+    environment:
+      TZ: Asia/Shanghai  # 所有容器统一时区
+      JAVA_OPT_EXT: " -Xms1g -Xmx1g -Xmn512m"
+      ENABLE_SCHEDULE_MESSAGE: "false"
+    depends_on:
+      - namesrv
+    restart: always
+
+  rocketmq-dashboard:
+    image: apacherocketmq/rocketmq-dashboard:2.0.1
+    container_name: mw-rocketmq-dashboard
+    ports:
+      - "8980:8080"
+    #volumes:
+    environment:
+      TZ: Asia/Shanghai  # 所有容器统一时区
+      JAVA_OPTS: "-Drocketmq.namesrv.addr=namesrv:9876"
+    depends_on:
+      - namesrv
+      - broker
+    restart: always
+
+networks:
+  yudao-network:
+    driver: bridge

@@ -23,7 +23,7 @@ public class CozeChatModelTests {
 
     private final OpenAiChatModel chatModel = OpenAiChatModel.builder()
             .openAiApi(OpenAiApi.builder()
-                    .baseUrl("http://127.0.0.1:3000")
+                    .baseUrl("http://192.168.56.14:3000")
                     .apiKey("app-4hy2d7fJauSbrKbzTKX1afuP") // apiKey
                     .build())
             .build();

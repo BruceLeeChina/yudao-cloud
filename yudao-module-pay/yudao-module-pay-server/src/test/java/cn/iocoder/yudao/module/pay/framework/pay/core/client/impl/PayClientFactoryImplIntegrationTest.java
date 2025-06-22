@@ -126,8 +126,8 @@ public class PayClientFactoryImplIntegrationTest {
         reqDTO.setSubject("IPhone 13");
         reqDTO.setBody("biubiubiu");
         reqDTO.setOutTradeNo(String.valueOf(System.currentTimeMillis()));
-        reqDTO.setUserIp("127.0.0.1");
-        reqDTO.setNotifyUrl("http://127.0.0.1:8080");
+        reqDTO.setUserIp("192.168.56.14");
+        reqDTO.setNotifyUrl("http://192.168.56.14:8080");
         return reqDTO;
     }
 

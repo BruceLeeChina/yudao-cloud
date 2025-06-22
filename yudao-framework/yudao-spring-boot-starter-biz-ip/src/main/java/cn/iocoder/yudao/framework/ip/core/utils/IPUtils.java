@@ -46,7 +46,7 @@ public class IPUtils {
     /**
      * 查询 IP 对应的地区编号
      *
-     * @param ip IP 地址，格式为 127.0.0.1
+     * @param ip IP 地址，格式为 192.168.56.14
      * @return 地区id
      */
     @SneakyThrows
@@ -68,7 +68,7 @@ public class IPUtils {
     /**
      * 查询 IP 对应的地区
      *
-     * @param ip IP 地址，格式为 127.0.0.1
+     * @param ip IP 地址，格式为 192.168.56.14
      * @return 地区
      */
     public static Area getArea(String ip) {

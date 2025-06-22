@@ -19,7 +19,7 @@ public class FtpFileClientTest {
 //            -p 2121:21 -p 30000-30009:30000-30009 \
 //            -e FTP_USER=foo \
 //            -e FTP_PASS=pass \
-//            -e PASV_ADDRESS=127.0.0.1 \
+//            -e PASV_ADDRESS=192.168.56.14 \
 //            -e PASV_MIN_PORT=30000 \
 //            -e PASV_MAX_PORT=30009 \
 //            -v $(pwd)/ftp-data:/home/vsftpd \
@@ -30,9 +30,9 @@ public class FtpFileClientTest {
     public void test() {
         // 创建客户端
         FtpFileClientConfig config = new FtpFileClientConfig();
-        config.setDomain("http://127.0.0.1:48080");
+        config.setDomain("http://192.168.56.14:48080");
         config.setBasePath("/home/ftp");
-        config.setHost("127.0.0.1");
+        config.setHost("192.168.56.14");
         config.setPort(2121);
         config.setUsername("foo");
         config.setPassword("pass");

@@ -1,10 +1,10 @@
 /*
  Navicat Premium Data Transfer
 
- Source Server         : 127.0.0.1 MySQL
+ Source Server         : 192.168.56.14 MySQL
  Source Server Type    : MySQL
  Source Server Version : 80200 (8.2.0)
- Source Host           : 127.0.0.1:3306
+ Source Host           : 192.168.56.14:3306
  Source Schema         : ruoyi-vue-pro
 
  Target Server Type    : MySQL

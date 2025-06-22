@@ -153,7 +153,7 @@ public class BpmModelMetaInfoVO {
     @Data
     public static class HttpRequestSetting {
 
-        @Schema(description = "请求路径", example = "http://127.0.0.1")
+        @Schema(description = "请求路径", example = "http://192.168.56.14")
         @NotEmpty(message = "请求 URL 不能为空")
         @URL(message = "请求 URL 格式不正确")
         private String url;

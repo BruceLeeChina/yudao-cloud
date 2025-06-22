@@ -1,0 +1,6 @@
+console:
+  user:
+    username: seata
+    password: seata
+security:
+  secretKey: seata

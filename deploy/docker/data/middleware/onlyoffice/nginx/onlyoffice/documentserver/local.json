@@ -1,0 +1,61 @@
+{
+  "services": {
+    "CoAuthoring": {
+      "sql": {
+        "type": "postgres",
+        "dbHost": "localhost",
+        "dbPort": "5432",
+        "dbName": "onlyoffice",
+        "dbUser": "onlyoffice",
+        "dbPass": "onlyoffice"
+      },
+      "token": {
+        "enable": {
+          "request": {
+            "inbox": true,
+            "outbox": true
+          },
+          "browser": true
+        },
+        "inbox": {
+          "header": "Authorization",
+          "inBody": false
+        },
+        "outbox": {
+          "header": "Authorization",
+          "inBody": false
+        }
+      },
+      "secret": {
+        "inbox": {
+          "string": "nJvzNopZyKEQGmLJdJpdjSnUn7ap9Mkt"
+        },
+        "outbox": {
+          "string": "nJvzNopZyKEQGmLJdJpdjSnUn7ap9Mkt"
+        },
+        "session": {
+          "string": "nJvzNopZyKEQGmLJdJpdjSnUn7ap9Mkt"
+        }
+      }
+    }
+  },
+  "rabbitmq": {
+    "url": "amqp://guest:guest@localhost"
+  },
+  "wopi": {
+    "enable": false,
+    "privateKey": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC8gO0r56UL4JYI\n8GM+3FelOqv7b/6M046TgKvVueKoJFELzjo78eqCrxqpeDWK0PeQutOLM3PpG51H\n+YnR0N0O3x1/4dfTEizX8tO9k7TVzCKQ8XkEhyALBFgBOOX1l2Y1/0so9Mgkzdkj\nMdnz7PF65yZoecz5ODBgp/vZ1rhVtTHHGP1kvrd0m8KBpgChWbiMTO1eh0GVoLWc\na66uebCpIm16hO4HoX+wg9MYujdpimvbrQGN6e7GgiISd18awSEjAtcEJs8RZXqO\nSJY0bTBKrC+yR9ZytBLSqITHs3f+Y2P+lkju4gEiMC1VoWCCLJ4US+wZmLmPuwQo\nhq/ZYhy9AgMBAAECggEABDi/9wyCUASI36zgkCMXrGnmuaQdt5IyXn/SeWAnIRxl\nG0ZUXAzUM3aP+o0oZ9I7xShF/hdaKHWXnWnLiiErHj7ldnx8nKvKyNBVqSiCc4pV\nmNjrnKwZDd4cSXS4g7pPDfUIfiOTSu24R/dBGhsrolTEcbEOo+M8BCIm/A84xCSX\nnJ6rQmO4NWQ7OqHTXtk/sT00/2b09PJiGseWszEDjItFBzp7/etcdNd4DOad0iGg\noyMdHQ/s7pBRR+heI+jrrN8x3NvLo8dwpulr8Kxhb8f/2ahbl73mdKc0QzNkU7Eb\ntPv7Sh8W/38jJf+4AhG7jOO3qP0PuA0qygM9QFwQqQKBgQDPruvzXAfvyC2Nd8+H\nZKb7CHTahkIEc3RotVbavT66CvpW/W1n9XE0hMXzUqzNoUtBI5KiGA/Yq9W/3i6B\ni3vP7G9bu6htIIunQIBOp/zk80miZ1506d4q7szS2MhDGTL6Y68+ZlExwq93t3pV\nBr9/UlV1oXhfPLFWe4/o4YvChQKBgQDoW7ahoq8WqjeYAARukTnRnl93gfxbdIaN\nUjoGmuaA9rRktv760PBZFrzNhrXGF7PZLURoPNq9zsI2eT2QScx5q6HfppBZCFbw\nEJfGHWj+Q7sLoUx+QJWvoaOig5T/ErkhE0K8jR8c+S8OojsZ/uT3lG/ZHAoUGhxT\nQLvHQY9y2QKBgQDGjBYq/CriQ9+4xXfzmnhAuh7s4zmuA6qgh+zXBeE3/1LBY1r6\n7h0h9mVAcCOgGrlVNuryaEqN/AlHeuO/GVhuuTzk2Az29wxMA1Am4lbVkvksd+JH\np2WsacwLLxCVhTvFQRPCdhLdnaAetZwQOXlOAaqN4KaxddacNVipbSct+QKBgARL\nJY3JDskxbgOOBIbyggoAji0MJtidx5q26UGT/Sxm4qB1zTJfSAGtbOGzWoqFh5o8\nvuXaMgSN3ILbLKsM4g1hgYU7c7FheRHIjLVpd7YzFDK70UkH8nwjVX28RrWL6AXX\ncEVBqlCDvj3b+5GYZyy3/nUZkooajWlwacfdy0PJAoGBALes7rzu4aFgBSPomauJ\n0DcJRleCOuBlOj/lOn28EiCaC6Vu9q951hvg78ETfn0+dPwgXsZopbhEDmdFdIwH\nnVXoCxscJ24Fx24QUm8Vp1OI0i56N4pP5hp5U5Gwut7KtRGrm8CdTMPVE6tWJpBc\nT75rOHujja0Ppd+8kC85jcNy\n-----END PRIVATE KEY-----\n",
+    "privateKeyOld": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC8gO0r56UL4JYI\n8GM+3FelOqv7b/6M046TgKvVueKoJFELzjo78eqCrxqpeDWK0PeQutOLM3PpG51H\n+YnR0N0O3x1/4dfTEizX8tO9k7TVzCKQ8XkEhyALBFgBOOX1l2Y1/0so9Mgkzdkj\nMdnz7PF65yZoecz5ODBgp/vZ1rhVtTHHGP1kvrd0m8KBpgChWbiMTO1eh0GVoLWc\na66uebCpIm16hO4HoX+wg9MYujdpimvbrQGN6e7GgiISd18awSEjAtcEJs8RZXqO\nSJY0bTBKrC+yR9ZytBLSqITHs3f+Y2P+lkju4gEiMC1VoWCCLJ4US+wZmLmPuwQo\nhq/ZYhy9AgMBAAECggEABDi/9wyCUASI36zgkCMXrGnmuaQdt5IyXn/SeWAnIRxl\nG0ZUXAzUM3aP+o0oZ9I7xShF/hdaKHWXnWnLiiErHj7ldnx8nKvKyNBVqSiCc4pV\nmNjrnKwZDd4cSXS4g7pPDfUIfiOTSu24R/dBGhsrolTEcbEOo+M8BCIm/A84xCSX\nnJ6rQmO4NWQ7OqHTXtk/sT00/2b09PJiGseWszEDjItFBzp7/etcdNd4DOad0iGg\noyMdHQ/s7pBRR+heI+jrrN8x3NvLo8dwpulr8Kxhb8f/2ahbl73mdKc0QzNkU7Eb\ntPv7Sh8W/38jJf+4AhG7jOO3qP0PuA0qygM9QFwQqQKBgQDPruvzXAfvyC2Nd8+H\nZKb7CHTahkIEc3RotVbavT66CvpW/W1n9XE0hMXzUqzNoUtBI5KiGA/Yq9W/3i6B\ni3vP7G9bu6htIIunQIBOp/zk80miZ1506d4q7szS2MhDGTL6Y68+ZlExwq93t3pV\nBr9/UlV1oXhfPLFWe4/o4YvChQKBgQDoW7ahoq8WqjeYAARukTnRnl93gfxbdIaN\nUjoGmuaA9rRktv760PBZFrzNhrXGF7PZLURoPNq9zsI2eT2QScx5q6HfppBZCFbw\nEJfGHWj+Q7sLoUx+QJWvoaOig5T/ErkhE0K8jR8c+S8OojsZ/uT3lG/ZHAoUGhxT\nQLvHQY9y2QKBgQDGjBYq/CriQ9+4xXfzmnhAuh7s4zmuA6qgh+zXBeE3/1LBY1r6\n7h0h9mVAcCOgGrlVNuryaEqN/AlHeuO/GVhuuTzk2Az29wxMA1Am4lbVkvksd+JH\np2WsacwLLxCVhTvFQRPCdhLdnaAetZwQOXlOAaqN4KaxddacNVipbSct+QKBgARL\nJY3JDskxbgOOBIbyggoAji0MJtidx5q26UGT/Sxm4qB1zTJfSAGtbOGzWoqFh5o8\nvuXaMgSN3ILbLKsM4g1hgYU7c7FheRHIjLVpd7YzFDK70UkH8nwjVX28RrWL6AXX\ncEVBqlCDvj3b+5GYZyy3/nUZkooajWlwacfdy0PJAoGBALes7rzu4aFgBSPomauJ\n0DcJRleCOuBlOj/lOn28EiCaC6Vu9q951hvg78ETfn0+dPwgXsZopbhEDmdFdIwH\nnVXoCxscJ24Fx24QUm8Vp1OI0i56N4pP5hp5U5Gwut7KtRGrm8CdTMPVE6tWJpBc\nT75rOHujja0Ppd+8kC85jcNy\n-----END PRIVATE KEY-----\n",
+    "publicKey": "BgIAAACkAABSU0ExAAgAAAEAAQC9HGLZr4YoBLuPuZgZ7EsUniyCYKFVLTAiAeLuSJb+Y2P+d7PHhKjSErRy1keyL6xKMG00lkiOemURzyYE1wIjIcEaX3cSIoLG7umNAa3ba4ppN7oY04Owf6EH7oR6bSKpsHmurmuctaCVQYde7UyMuFmhAKaBwpt0t75k/RjHMbVVuNbZ+6dgMDj5zHloJud68ezz2TEj2c0kyPQoS/81Zpf15TgBWAQLIIcEefGQIszVtJO90/LXLBLT1+F/Hd8O3dDRiflHnRvpczOL07qQ99CKNXipGq+C6vE7Os4LUSSo4rnVq4CTjtOM/m/7qzqlV9w+Y/AIluALpecr7YC8",
+    "publicKeyOld": "BgIAAACkAABSU0ExAAgAAAEAAQC9HGLZr4YoBLuPuZgZ7EsUniyCYKFVLTAiAeLuSJb+Y2P+d7PHhKjSErRy1keyL6xKMG00lkiOemURzyYE1wIjIcEaX3cSIoLG7umNAa3ba4ppN7oY04Owf6EH7oR6bSKpsHmurmuctaCVQYde7UyMuFmhAKaBwpt0t75k/RjHMbVVuNbZ+6dgMDj5zHloJud68ezz2TEj2c0kyPQoS/81Zpf15TgBWAQLIIcEefGQIszVtJO90/LXLBLT1+F/Hd8O3dDRiflHnRvpczOL07qQ99CKNXipGq+C6vE7Os4LUSSo4rnVq4CTjtOM/m/7qzqlV9w+Y/AIluALpecr7YC8",
+    "modulus": "vIDtK+elC+CWCPBjPtxXpTqr+2/+jNOOk4Cr1bniqCRRC846O/Hqgq8aqXg1itD3kLrTizNz6RudR/mJ0dDdDt8df+HX0xIs1/LTvZO01cwikPF5BIcgCwRYATjl9ZdmNf9LKPTIJM3ZIzHZ8+zxeucmaHnM+TgwYKf72da4VbUxxxj9ZL63dJvCgaYAoVm4jEztXodBlaC1nGuurnmwqSJteoTuB6F/sIPTGLo3aYpr260BjenuxoIiEndfGsEhIwLXBCbPEWV6jkiWNG0wSqwvskfWcrQS0qiEx7N3/mNj/pZI7uIBIjAtVaFggiyeFEvsGZi5j7sEKIav2WIcvQ==",
+    "modulusOld": "vIDtK+elC+CWCPBjPtxXpTqr+2/+jNOOk4Cr1bniqCRRC846O/Hqgq8aqXg1itD3kLrTizNz6RudR/mJ0dDdDt8df+HX0xIs1/LTvZO01cwikPF5BIcgCwRYATjl9ZdmNf9LKPTIJM3ZIzHZ8+zxeucmaHnM+TgwYKf72da4VbUxxxj9ZL63dJvCgaYAoVm4jEztXodBlaC1nGuurnmwqSJteoTuB6F/sIPTGLo3aYpr260BjenuxoIiEndfGsEhIwLXBCbPEWV6jkiWNG0wSqwvskfWcrQS0qiEx7N3/mNj/pZI7uIBIjAtVaFggiyeFEvsGZi5j7sEKIav2WIcvQ==",
+    "exponent": 65537,
+    "exponentOld": 65537
+  },
+  "storage": {
+    "fs": {
+      "secretString": "tatH6VT3v7UgIXq8yPHq"
+    }
+  }
+}

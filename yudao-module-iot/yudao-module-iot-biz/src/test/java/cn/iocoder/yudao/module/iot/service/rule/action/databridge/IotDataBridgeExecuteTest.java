@@ -60,7 +60,7 @@ public class IotDataBridgeExecuteTest extends BaseMockitoUnitTest {
         // 2. 创建配置
         // TODO @puhui999：可以改成链式哈。
         IotDataBridgeKafkaMQConfig config = new IotDataBridgeKafkaMQConfig();
-        config.setBootstrapServers("127.0.0.1:9092");
+        config.setBootstrapServers("192.168.56.14:9092");
         config.setTopic("test-topic");
         config.setSsl(false);
         config.setUsername(null);
@@ -105,7 +105,7 @@ public class IotDataBridgeExecuteTest extends BaseMockitoUnitTest {
 
         // 2. 创建配置
         IotDataBridgeRedisStreamMQConfig config = new IotDataBridgeRedisStreamMQConfig();
-        config.setHost("127.0.0.1");
+        config.setHost("192.168.56.14");
         config.setPort(6379);
         config.setDatabase(0);
         config.setPassword("123456");
@@ -126,7 +126,7 @@ public class IotDataBridgeExecuteTest extends BaseMockitoUnitTest {
 
         // 2. 创建配置
         IotDataBridgeRocketMQConfig config = new IotDataBridgeRocketMQConfig();
-        config.setNameServer("127.0.0.1:9876");
+        config.setNameServer("192.168.56.14:9876");
         config.setGroup("test-group");
         config.setTopic("test-topic");
         config.setTags("test-tag");
