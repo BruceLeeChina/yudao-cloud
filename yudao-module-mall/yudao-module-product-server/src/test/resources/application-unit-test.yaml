@@ -21,12 +21,31 @@ spring:
       schema-locations: classpath:/sql/create_tables.sql
 
   # Redis 配置。Redisson 默认的配置足够使用，一般不需要进行调优
-  data:
-    redis:
-      host: 192.168.56.14 # 地址
-      port: 16379 # 端口（单元测试，使用 16379 端口）
-      database: 0 # 数据库索引
-
+  redis:
+    host: 192.168.56.14 # 地址
+    port: 16379 # 端口（单元测试，使用 16379 端口）
+    database: 0 # 数据库索引
+    password: yudao2025@mall # 密码，建议生产环境开启
+    # Redisson专属配置
+    redisson:
+      config: |
+        singleServerConfig:
+          address: "redis://${spring.redis.host}:${spring.redis.port}"
+          password: ${spring.redis.password}
+          database: ${spring.redis.database}
+          # 连接池设置
+          connectionPoolSize: 64
+          connectionMinimumIdleSize: 24
+          # 超时设置（单位毫秒）
+          connectTimeout: 10000
+          timeout: 5000
+          retryAttempts: 3
+          retryInterval: 1500
+          # 保持连接活跃
+          pingConnectionInterval: 30000
+        # 线程池配置
+        threads: 16
+        nettyThreads: 32
 mybatis-plus:
   lazy-initialization: true # 单元测试，设置 MyBatis Mapper 延迟加载，加速每个单元测试
   type-aliases-package: ${yudao.info.base-package}.dal.dataobject

@@ -6,7 +6,7 @@ yudao:
   iot:
     plugin:
       common:
-        upstream-url: http://192.168.56.14:48080
+        upstream-url: http://192.168.56.1:48080
         downstream-port: 8093
         plugin-key: yudao-module-iot-plugin-http
       http:

@@ -431,6 +431,22 @@ CREATE TABLE `ai_write`  (
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 226 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci COMMENT = 'AI 写作表';
 
+CREATE TABLE `ai_workflow` (
+    `id` BIGINT NOT NULL COMMENT '编号',
+    `name` VARCHAR(255) NOT NULL COMMENT '工作流名称',
+    `code` VARCHAR(255) NOT NULL COMMENT '工作流标识',
+    `graph` TEXT NOT NULL COMMENT '工作流模型 JSON 数据',
+    `remark` TEXT COMMENT '备注',
+    `status` INT NOT NULL COMMENT '状态 (枚举 CommonStatusEnum)',
+    `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
+    `creator` VARCHAR(255) COMMENT '创建者',
+    `updater` VARCHAR(255) COMMENT '更新者',
+    `deleted` TINYINT NOT NULL DEFAULT 0 COMMENT '是否删除 (0:未删除, 1:已删除)',
+    `tenant_id` bigint(20) NOT NULL DEFAULT '0' COMMENT '租户编号',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='AI 工作流表';
+
 -- ----------------------------
 -- Records of ai_write
 -- ----------------------------

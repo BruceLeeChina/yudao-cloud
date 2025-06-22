@@ -6,10 +6,10 @@ spring:
   autoconfigure:
     # noinspection SpringBootApplicationYaml
     exclude:
-      - de.codecentric.boot.admin.server.config.AdminServerAutoConfiguration # 禁用 Spring Boot Admin 的 Server 的自动配置
-      - de.codecentric.boot.admin.server.ui.config.AdminServerUiAutoConfiguration # 禁用 Spring Boot Admin 的 Server UI 的自动配置
-      - de.codecentric.boot.admin.server.cloud.config.AdminServerDiscoveryAutoConfiguration # 禁用 Spring Boot Admin 的 Server 的自动配置
-      - de.codecentric.boot.admin.client.config.SpringBootAdminClientAutoConfiguration # 禁用 Spring Boot Admin 的 Client 的自动配置
+#      - de.codecentric.boot.admin.server.config.AdminServerAutoConfiguration # 禁用 Spring Boot Admin 的 Server 的自动配置
+#      - de.codecentric.boot.admin.server.ui.config.AdminServerUiAutoConfiguration # 禁用 Spring Boot Admin 的 Server UI 的自动配置
+#      - de.codecentric.boot.admin.server.cloud.config.AdminServerDiscoveryAutoConfiguration # 禁用 Spring Boot Admin 的 Server 的自动配置
+#      - de.codecentric.boot.admin.client.config.SpringBootAdminClientAutoConfiguration # 禁用 Spring Boot Admin 的 Client 的自动配置
       - org.springframework.ai.autoconfigure.vectorstore.qdrant.QdrantVectorStoreAutoConfiguration # 禁用 AI 模块的 Qdrant，手动创建
       - org.springframework.ai.autoconfigure.vectorstore.milvus.MilvusVectorStoreAutoConfiguration # 禁用 AI 模块的 Milvus，手动创建
   # 数据源配置项
@@ -56,19 +56,19 @@ spring:
           #          url: jdbc:dm://192.168.56.14:5236?schema=RUOYI_VUE_PRO # DM 连接的示例
           #          url: jdbc:kingbase8://192.168.56.14:54321/test  # 人大金仓 KingbaseES 连接的示例
           #          url: jdbc:postgresql://192.168.56.14:5432/postgres # OpenGauss 连接的示例
-          username: root
-          password: 123456
+          username: yudao
+          password: yudao2025@mall
           #          username: sa # SQL Server 连接的示例
           #          password: Yudao@2024 # SQL Server 连接的示例
           #          username: SYSDBA # DM 连接的示例
           #          password: SYSDBA001 # DM 连接的示例
-          #          username: root # OpenGauss 连接的示例
+          #          username: yudao # OpenGauss 连接的示例
           #          password: Yudao@2024 # OpenGauss 连接的示例
         slave: # 模拟从库，可根据自己需要修改
           lazy: true # 开启懒加载，保证启动速度
           url: jdbc:mysql://192.168.56.14:3306/ruoyi-vue-pro?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true&nullCatalogMeansCurrent=true
-          username: root
-          password: 123456
+          username: yudao
+          password: yudao2025@mall
 #        tdengine: # IoT 数据库（需要 IoT 物联网再开启噢！）
 #          url: jdbc:TAOS-RS://192.168.56.14:6041/ruoyi_vue_pro
 #          driver-class-name: com.taosdata.jdbc.rs.RestfulDriver
@@ -78,12 +78,12 @@ spring:
 #            validation-query: SELECT SERVER_STATUS() # TDengine 数据源的有效性检查 SQL
 
   # Redis 配置。Redisson 默认的配置足够使用，一般不需要进行调优
-  data:
+#  data:
     redis:
       host: 192.168.56.14 # 地址
       port: 6379 # 端口
       database: 0 # 数据库索引
-  #    password: dev # 密码，建议生产环境开启
+      password: yudao2025@mall # 密码，建议生产环境开启
 
 --- #################### 定时任务相关配置 ####################
 
