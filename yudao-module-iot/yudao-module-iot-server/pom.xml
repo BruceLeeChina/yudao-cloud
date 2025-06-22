@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
     <packaging>jar</packaging>
 
-    <artifactId>yudao-module-iot-biz</artifactId>
+    <artifactId>yudao-module-iot-server</artifactId>
 
     <name>${project.artifactId}</name>
     <description>
