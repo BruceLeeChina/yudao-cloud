@@ -24,7 +24,8 @@ sudo ln -s /usr/libexec/docker/cli-plugins/docker-compose /usr/local/bin/docker-
 # clear_proxy.sh
 # sudo dnf install jq
 
-cd /opt/yudao/ && docker-compose up -d
+[//]: # (cd /opt/yudao/ && docker-compose up -d)
+cd /opt/yudao/ && docker-compose -f docker-compose-middleware.yml up -d
 
 
 # mysql脚本：初始执行 root 密码：yudao2025@mall

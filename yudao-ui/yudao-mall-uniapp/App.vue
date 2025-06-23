@@ -2,7 +2,6 @@
   import { onLaunch, onShow, onError } from '@dcloudio/uni-app';
   import { ShoproInit } from './sheep';
 
-
   onLaunch(() => {
     // 隐藏原生导航栏 使用自定义底部导航
     uni.hideTabBar({

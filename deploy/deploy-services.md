@@ -103,10 +103,10 @@ cd /opt/yudao/shell-scripts/ && chmod +x build_services_images.sh
 
 # 3. 使用方式:
 #    构建所有模块:
-./build_services_images.sh all
+cd /opt/yudao/shell-scripts/ && ./build_services_images.sh all
 
 #    构建指定模块:
-./build_services_images.sh "yudao-module-ai-server,yudao-module-erp-server"
+cd /opt/yudao/shell-scripts/ &&  ./build_services_images.sh "yudao-module-ai-server,yudao-module-erp-server"
 
 #    显示帮助信息:
 ./build_services_images.sh help
@@ -132,6 +132,24 @@ cd /opt/yudao/services/jenkins/yudao-cloud/yudao-module-ai/yudao-module-ai-serve
 /opt/yudao/services/jenkins/yudao-cloud/yudao-gateway/Dockerfile
 /opt/yudao/services/jenkins/yudao-cloud/yudao-server/Dockerfile
 /opt/yudao/services/jenkins/yudao-cloud/yudao-module-infra/yudao-module-infra-server/Dockerfile
+
+yudao-module-report-server          2.6.0                          49563221395f   32 seconds ago       486MB
+yudao-module-pay-server             2.6.0                          6f34de0ea69e   57 seconds ago       458MB
+yudao-module-mp-server              2.6.0                          25460ca8a70f   About a minute ago   427MB
+yudao-module-product-server         2.6.0                          08d92091628f   4 minutes ago        423MB
+yudao-module-promotion-server       2.6.0                          a6c3b5372463   5 minutes ago        432MB
+yudao-module-erp-server             2.6.0                          6e4849678c7f   5 minutes ago        423MB
+yudao-module-infra-server           2.6.0                          69b04edc9492   6 minutes ago        453MB
+yudao-module-bpm-server             2.6.0                          bcb34884a38c   6 minutes ago        435MB
+yudao-module-crm-server             2.6.0                          cdaa01a2c5c2   6 minutes ago        433MB
+yudao-gateway                       2.6.0                          d9db53a04db3   7 minutes ago        354MB
+yudao-module-ai-server              2.6.0                          306dbf92cf85   7 minutes ago        645MB
+yudao-module-system-server          2.6.0                          a4c00638bf65   8 minutes ago        455MB
+yudao-module-member-server          2.6.0                          6bc64610dccc   8 minutes ago        424MB
+yudao-module-statistics-server      2.6.0                          8064a103fd89   8 minutes ago        433MB
+yudao-module-trade-server           2.6.0                          d4aa3e2761d0   9 minutes ago        434MB
+yudao-server                        2.6.0                          8286cabb262d   14 minutes ago       810MB
+
 
 =========================================AI 回答 构建脚本==============================================
 以下是为脚本添加 `all` 参数支持的完整版本，可以一键构建所有模块：
@@ -371,5 +389,76 @@ Already up to date.
 
 这个脚本现在支持三种操作模式：构建所有模块、构建指定模块、显示帮助信息，可以满足不同的构建需求。
 =========================================AI 回答==============================================
+
+## 3.启动后端服务 + 前端服务
+yudao-gateway                       2.6.0        48080
+yudao-module-system-server          2.6.0        48081
+yudao-module-infra-server           2.6.0        48082
+yudao-module-bpm-server             2.6.0        48083
+yudao-module-report-server          2.6.0        48084
+yudao-module-pay-server             2.6.0        48085
+yudao-module-mp-server              2.6.0        48086
+yudao-module-member-server          2.6.0        48087
+yudao-module-erp-server             2.6.0        48088
+yudao-module-crm-server             2.6.0        48089
+yudao-module-ai-server              2.6.0        48090
+yudao-module-iot-server             2.6.0        48091
+yudao-module-product-server         2.6.0        48100
+yudao-module-promotion-server       2.6.0        48101
+yudao-module-trade-server           2.6.0        48102
+yudao-module-statistics-server      2.6.0        48103
+
+yudao-server                        2.6.0        48080
+
+启动：
+cd /opt/yudao/ && docker-compose -f docker-compose-services.yml up -d
+
+前端服务：
+安装 nodejs 和 npm
+# 安装 NVM（Node Version Manager）
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+# 重启终端或加载配置
+source ~/.bashrc
+# 安装指定 Node.js 版本（如 v20.14.0）
+nvm install 20.14.0
+# 设置为默认版本
+nvm alias default 20.14.0
+# 验证
+node -v
+npm -v
+
+npm config set registry https://registry.npmmirror.com
+npm install -g typescript yarn  # 全局安装 TypeScript 和 Yarn
+# 全局安装 uni-app 脚手架
+npm install -g @dcloudio/vue-cli
+
+打包路径： /opt/yudao/services/jenkins/yudao-cloud/yudao-ui/yudao-ui-admin-vue3/
+# 安装 pnpm，提升依赖的安装速度
+npm config set registry https://registry.npmmirror.com
+npm install -g pnpm
+cd /opt/yudao/services/jenkins/yudao-cloud/yudao-ui/yudao-ui-admin-vue3/
+# 安装依赖
+pnpm install
+# 启动服务
+npm run dev
+打包：
+cd /opt/yudao/services/jenkins/yudao-cloud/yudao-ui/yudao-ui-admin-vue3/ && npm run build:dev
+cp -r /opt/yudao/services/jenkins/yudao-cloud/yudao-ui/yudao-ui-admin-vue3/dist/* /opt/yudao/middleware/openresty/html/admin/
+
+
+
+打包路径： /opt/yudao/services/jenkins/yudao-cloud/yudao-ui/yudao-mall-uniapp/
+# 安装 npm 依赖
+npm config set registry https://registry.npmmirror.com
+npm i
+# 【非必须】如果报错，可以在尝试，执行下如下命令
+npm install --legacy-peer-deps
+# 启动服务 构建服务
+# 打包 H5
+npm run build:h5
+# 打包小程序（如微信）
+npm run build:mp-weixin
+
+
 
 

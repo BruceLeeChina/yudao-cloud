@@ -16,6 +16,7 @@ declare -A DOCKERFILE_PATHS=(
   ["yudao-module-mp-server"]="$PROJECT_ROOT/yudao-module-mp/yudao-module-mp-server/Dockerfile"
   ["yudao-module-system-server"]="$PROJECT_ROOT/yudao-module-system/yudao-module-system-server/Dockerfile"
   ["yudao-module-crm-server"]="$PROJECT_ROOT/yudao-module-crm/yudao-module-crm-server/Dockerfile"
+  ["yudao-module-iot-server"]="$PROJECT_ROOT/yudao-module-iot/yudao-module-iot-server/Dockerfile"
   ["yudao-module-promotion-server"]="$PROJECT_ROOT/yudao-module-mall/yudao-module-promotion-server/Dockerfile"
   ["yudao-module-product-server"]="$PROJECT_ROOT/yudao-module-mall/yudao-module-product-server/Dockerfile"
   ["yudao-module-trade-server"]="$PROJECT_ROOT/yudao-module-mall/yudao-module-trade-server/Dockerfile"
@@ -29,16 +30,22 @@ declare -A DOCKERFILE_PATHS=(
 # 获取所有模块名称
 ALL_MODULES=("${!DOCKERFILE_PATHS[@]}")
 
-# 更新代码函数
 update_code() {
   echo "🔄 正在更新代码..."
   cd "$PROJECT_ROOT" || { echo "❌ 无法进入项目目录: $PROJECT_ROOT"; exit 1; }
 
-  if git pull; then
-    echo "✅ 代码更新成功"
+  # 添加分支合并策略（三选一）
+  git config pull.rebase false   # 使用merge策略（推荐）
+  # 或 git config pull.rebase true    # 使用rebase策略
+  # 或 git config pull.ff only        # 仅允许快进合并
+
+  git fetch --all
+  if git reset --hard origin/master-jdk17; then
+    echo "✅ 代码重置成功"
   else
-    echo "❌ 代码更新失败"
-    exit 1
+    echo "❌ 代码重置失败，尝试强制清理..."
+    git clean -fd   # 删除未跟踪文件
+    git reset --hard origin/master-jdk17 || { echo "❌ 强制重置失败"; exit 1; }
   fi
 }
 

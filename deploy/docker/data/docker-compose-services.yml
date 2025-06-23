@@ -1,0 +1,416 @@
+services:
+  openresty:
+    image: openresty/openresty:1.25.3.2-4-jammy-amd64
+    container_name: mw-openresty
+    environment:
+      - TZ=Asia/Shanghai  # 所有容器统一时区
+    volumes:
+      - ./middleware/openresty/conf.d:/usr/local/openresty/nginx/conf/conf.d
+      - ./middleware/openresty/conf/nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf
+      - ./middleware/openresty/html:/usr/local/openresty/nginx/html
+      #- ./middleware/openresty/static:/usr/local/openresty/nginx/static
+    ports:
+      - "80:80"
+    command: [ "nginx", "-g", "daemon off;" ]
+    restart: unless-stopped
+
+  yudao-gateway:
+    image: yudao-gateway:2.6.0
+    container_name: yudao-gateway
+    environment:
+      - TZ=Asia/Shanghai # 配置程序默认时区为上海（中国标准时间）
+      - JAVA_TOOL_OPTIONS=-javaagent:/data/skywalking/skywalking-agent/skywalking-agent.jar # 配置skywalking
+      - SW_AGENT_NAME=yudao-gateway
+      - SW_AGENT_TRACE_IGNORE_PATH=Redisson/PING,/actuator/**,/admin/**
+      - SW_AGENT_COLLECTOR_BACKEND_SERVICES=${SKYWALKING_ADDR} # 请替换 your.skywalking.addr 为你的 skywalking 地址
+      - SPRING_PROFILES_ACTIVE=${PROFILES_ACTIVE} # 指定程序运行环境
+      - SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR=${NACOS_CONFIG_SERVER_ADDR} # 配置中心地址
+      - SPRING_CLOUD_NACOS_CONFIG_NAMESPACE=${NACOS_CONFIG_NAMESPACE} # 命名空间
+      - SPRING_CLOUD_NACOS_SERVER_ADDR=${NACOS_CONFIG_SERVER_ADDR}  # 注册中心地址
+      - SPRING_CLOUD_NACOS_DISCOVERY_NAMESPACE=${NACOS_CONFIG_NAMESPACE} # 命名空间
+    volumes:
+      - /docker/yudao-cloud/logs:/root/logs/
+      - ./middleware/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
+    healthcheck:
+      test: [ "CMD","curl","-f","http://localhost:48080" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: always
+    network_mode: host
+  yudao-system:
+    image: yudao-module-system-server:2.6.0
+    container_name: yudao-system
+    environment:
+      - TZ=Asia/Shanghai # 配置程序默认时区为上海（中国标准时间）
+      - JAVA_TOOL_OPTIONS=-javaagent:/data/skywalking/skywalking-agent/skywalking-agent.jar # 配置skywalking
+      - SW_AGENT_NAME=yudao-system
+      - SW_AGENT_TRACE_IGNORE_PATH=Redisson/PING,/actuator/**,/admin/**
+      - SW_AGENT_COLLECTOR_BACKEND_SERVICES=${SKYWALKING_ADDR} # 请替换 your.skywalking.addr 为你的 skywalking 地址
+      - SPRING_PROFILES_ACTIVE=${PROFILES_ACTIVE} # 指定程序运行环境
+      - SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR=${NACOS_CONFIG_SERVER_ADDR} # 配置中心地址
+      - SPRING_CLOUD_NACOS_CONFIG_NAMESPACE=${NACOS_CONFIG_NAMESPACE} # 命名空间
+      - SPRING_CLOUD_NACOS_SERVER_ADDR=${NACOS_CONFIG_SERVER_ADDR}  # 注册中心地址
+      - SPRING_CLOUD_NACOS_DISCOVERY_NAMESPACE=${NACOS_CONFIG_NAMESPACE} # 命名空间
+    volumes:
+      - /docker/yudao-cloud/logs:/root/logs/
+      - ./middleware/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
+    healthcheck:
+      test: [ "CMD","curl","-f","http://localhost:48081" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: always
+    network_mode: host
+  yudao-infra:
+    image: yudao-module-infra-server:2.6.0
+    container_name: yudao-infra
+    environment:
+      - TZ=Asia/Shanghai # 配置程序默认时区为上海（中国标准时间）
+      - JAVA_TOOL_OPTIONS=-javaagent:/data/skywalking/skywalking-agent/skywalking-agent.jar # 配置skywalking
+      - SW_AGENT_NAME=yudao-infra
+      - SW_AGENT_TRACE_IGNORE_PATH=Redisson/PING,/actuator/**,/admin/**
+      - SW_AGENT_COLLECTOR_BACKEND_SERVICES=${SKYWALKING_ADDR} # 请替换 your.skywalking.addr 为你的 skywalking 地址
+      - SPRING_PROFILES_ACTIVE=${PROFILES_ACTIVE} # 指定程序运行环境
+      - SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR=${NACOS_CONFIG_SERVER_ADDR} # 配置中心地址
+      - SPRING_CLOUD_NACOS_CONFIG_NAMESPACE=${NACOS_CONFIG_NAMESPACE} # 命名空间
+      - SPRING_CLOUD_NACOS_SERVER_ADDR=${NACOS_CONFIG_SERVER_ADDR}  # 注册中心地址
+      - SPRING_CLOUD_NACOS_DISCOVERY_NAMESPACE=${NACOS_CONFIG_NAMESPACE} # 命名空间
+    volumes:
+      - /docker/yudao-cloud/logs:/root/logs/
+      - ./middleware/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
+    healthcheck:
+      test: [ "CMD","curl","-f","http://localhost:48082" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: always
+    network_mode: host
+  yudao-bpm:
+    image: yudao-module-bpm-server:2.6.0
+    container_name: yudao-bpm
+    environment:
+      - TZ=Asia/Shanghai # 配置程序默认时区为上海（中国标准时间）
+      - JAVA_TOOL_OPTIONS=-javaagent:/data/skywalking/skywalking-agent/skywalking-agent.jar # 配置skywalking
+      - SW_AGENT_NAME=yudao-bpm
+      - SW_AGENT_TRACE_IGNORE_PATH=Redisson/PING,/actuator/**,/admin/**
+      - SW_AGENT_COLLECTOR_BACKEND_SERVICES=${SKYWALKING_ADDR} # 请替换 your.skywalking.addr 为你的 skywalking 地址
+      - SPRING_PROFILES_ACTIVE=${PROFILES_ACTIVE} # 指定程序运行环境
+      - SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR=${NACOS_CONFIG_SERVER_ADDR} # 配置中心地址
+      - SPRING_CLOUD_NACOS_CONFIG_NAMESPACE=${NACOS_CONFIG_NAMESPACE} # 命名空间
+      - SPRING_CLOUD_NACOS_SERVER_ADDR=${NACOS_CONFIG_SERVER_ADDR}  # 注册中心地址
+      - SPRING_CLOUD_NACOS_DISCOVERY_NAMESPACE=${NACOS_CONFIG_NAMESPACE} # 命名空间
+    volumes:
+      - /docker/yudao-cloud/logs:/root/logs/
+      - ./middleware/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
+    healthcheck:
+      test: [ "CMD","curl","-f","http://localhost:48083" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: always
+    network_mode: host
+  yudao-report:
+    image: yudao-module-report-server:2.6.0
+    container_name: yudao-report
+    environment:
+      - TZ=Asia/Shanghai # 配置程序默认时区为上海（中国标准时间）
+      - JAVA_TOOL_OPTIONS=-javaagent:/data/skywalking/skywalking-agent/skywalking-agent.jar # 配置skywalking
+      - SW_AGENT_NAME=yudao-report
+      - SW_AGENT_TRACE_IGNORE_PATH=Redisson/PING,/actuator/**,/admin/**
+      - SW_AGENT_COLLECTOR_BACKEND_SERVICES=${SKYWALKING_ADDR} # 请替换 your.skywalking.addr 为你的 skywalking 地址
+      - SPRING_PROFILES_ACTIVE=${PROFILES_ACTIVE} # 指定程序运行环境
+      - SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR=${NACOS_CONFIG_SERVER_ADDR} # 配置中心地址
+      - SPRING_CLOUD_NACOS_CONFIG_NAMESPACE=${NACOS_CONFIG_NAMESPACE} # 命名空间
+      - SPRING_CLOUD_NACOS_SERVER_ADDR=${NACOS_CONFIG_SERVER_ADDR}  # 注册中心地址
+      - SPRING_CLOUD_NACOS_DISCOVERY_NAMESPACE=${NACOS_CONFIG_NAMESPACE} # 命名空间
+    volumes:
+      - /docker/yudao-cloud/logs:/root/logs/
+      - ./middleware/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
+    healthcheck:
+      test: [ "CMD","curl","-f","http://localhost:48084" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: always
+    network_mode: host
+  yudao-pay:
+    image: yudao-module-pay-server:2.6.0
+    container_name: yudao-pay
+    environment:
+      - TZ=Asia/Shanghai # 配置程序默认时区为上海（中国标准时间）
+      - JAVA_TOOL_OPTIONS=-javaagent:/data/skywalking/skywalking-agent/skywalking-agent.jar # 配置skywalking
+      - SW_AGENT_NAME=yudao-pay
+      - SW_AGENT_TRACE_IGNORE_PATH=Redisson/PING,/actuator/**,/admin/**
+      - SW_AGENT_COLLECTOR_BACKEND_SERVICES=${SKYWALKING_ADDR} # 请替换 your.skywalking.addr 为你的 skywalking 地址
+      - SPRING_PROFILES_ACTIVE=${PROFILES_ACTIVE} # 指定程序运行环境
+      - SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR=${NACOS_CONFIG_SERVER_ADDR} # 配置中心地址
+      - SPRING_CLOUD_NACOS_CONFIG_NAMESPACE=${NACOS_CONFIG_NAMESPACE} # 命名空间
+      - SPRING_CLOUD_NACOS_SERVER_ADDR=${NACOS_CONFIG_SERVER_ADDR}  # 注册中心地址
+      - SPRING_CLOUD_NACOS_DISCOVERY_NAMESPACE=${NACOS_CONFIG_NAMESPACE} # 命名空间
+    volumes:
+      - /docker/yudao-cloud/logs:/root/logs/
+      - ./middleware/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
+    healthcheck:
+      test: [ "CMD","curl","-f","http://localhost:48085" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: always
+    network_mode: host
+  yudao-mp:
+    image: yudao-module-mp-server:2.6.0
+    container_name: yudao-mp
+    environment:
+      - TZ=Asia/Shanghai # 配置程序默认时区为上海（中国标准时间）
+      - JAVA_TOOL_OPTIONS=-javaagent:/data/skywalking/skywalking-agent/skywalking-agent.jar # 配置skywalking
+      - SW_AGENT_NAME=yudao-mp
+      - SW_AGENT_TRACE_IGNORE_PATH=Redisson/PING,/actuator/**,/admin/**
+      - SW_AGENT_COLLECTOR_BACKEND_SERVICES=${SKYWALKING_ADDR} # 请替换 your.skywalking.addr 为你的 skywalking 地址
+      - SPRING_PROFILES_ACTIVE=${PROFILES_ACTIVE} # 指定程序运行环境
+      - SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR=${NACOS_CONFIG_SERVER_ADDR} # 配置中心地址
+      - SPRING_CLOUD_NACOS_CONFIG_NAMESPACE=${NACOS_CONFIG_NAMESPACE} # 命名空间
+      - SPRING_CLOUD_NACOS_SERVER_ADDR=${NACOS_CONFIG_SERVER_ADDR}  # 注册中心地址
+      - SPRING_CLOUD_NACOS_DISCOVERY_NAMESPACE=${NACOS_CONFIG_NAMESPACE} # 命名空间
+    volumes:
+      - /docker/yudao-cloud/logs:/root/logs/
+      - ./middleware/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
+    healthcheck:
+      test: [ "CMD","curl","-f","http://localhost:48086" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: always
+    network_mode: host
+  yudao-member:
+    image: yudao-module-member-server:2.6.0
+    container_name: yudao-member
+    environment:
+      - TZ=Asia/Shanghai # 配置程序默认时区为上海（中国标准时间）
+      - JAVA_TOOL_OPTIONS=-javaagent:/data/skywalking/skywalking-agent/skywalking-agent.jar # 配置skywalking
+      - SW_AGENT_NAME=yudao-member
+      - SW_AGENT_TRACE_IGNORE_PATH=Redisson/PING,/actuator/**,/admin/**
+      - SW_AGENT_COLLECTOR_BACKEND_SERVICES=${SKYWALKING_ADDR} # 请替换 your.skywalking.addr 为你的 skywalking 地址
+      - SPRING_PROFILES_ACTIVE=${PROFILES_ACTIVE} # 指定程序运行环境
+      - SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR=${NACOS_CONFIG_SERVER_ADDR} # 配置中心地址
+      - SPRING_CLOUD_NACOS_CONFIG_NAMESPACE=${NACOS_CONFIG_NAMESPACE} # 命名空间
+      - SPRING_CLOUD_NACOS_SERVER_ADDR=${NACOS_CONFIG_SERVER_ADDR}  # 注册中心地址
+      - SPRING_CLOUD_NACOS_DISCOVERY_NAMESPACE=${NACOS_CONFIG_NAMESPACE} # 命名空间
+    volumes:
+      - /docker/yudao-cloud/logs:/root/logs/
+      - ./middleware/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
+    healthcheck:
+      test: [ "CMD","curl","-f","http://localhost:48087" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: always
+    network_mode: host
+  yudao-erp:
+    image: yudao-module-erp-server:2.6.0
+    container_name: yudao-erp
+    environment:
+      - TZ=Asia/Shanghai # 配置程序默认时区为上海（中国标准时间）
+      - JAVA_TOOL_OPTIONS=-javaagent:/data/skywalking/skywalking-agent/skywalking-agent.jar # 配置skywalking
+      - SW_AGENT_NAME=yudao-erp
+      - SW_AGENT_TRACE_IGNORE_PATH=Redisson/PING,/actuator/**,/admin/**
+      - SW_AGENT_COLLECTOR_BACKEND_SERVICES=${SKYWALKING_ADDR} # 请替换 your.skywalking.addr 为你的 skywalking 地址
+      - SPRING_PROFILES_ACTIVE=${PROFILES_ACTIVE} # 指定程序运行环境
+      - SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR=${NACOS_CONFIG_SERVER_ADDR} # 配置中心地址
+      - SPRING_CLOUD_NACOS_CONFIG_NAMESPACE=${NACOS_CONFIG_NAMESPACE} # 命名空间
+      - SPRING_CLOUD_NACOS_SERVER_ADDR=${NACOS_CONFIG_SERVER_ADDR}  # 注册中心地址
+      - SPRING_CLOUD_NACOS_DISCOVERY_NAMESPACE=${NACOS_CONFIG_NAMESPACE} # 命名空间
+    volumes:
+      - /docker/yudao-cloud/logs:/root/logs/
+      - ./middleware/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
+    healthcheck:
+      test: [ "CMD","curl","-f","http://localhost:48088" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: always
+    network_mode: host
+  yudao-crm:
+    image: yudao-module-crm-server:2.6.0
+    container_name: yudao-crm
+    environment:
+      - TZ=Asia/Shanghai # 配置程序默认时区为上海（中国标准时间）
+      - JAVA_TOOL_OPTIONS=-javaagent:/data/skywalking/skywalking-agent/skywalking-agent.jar # 配置skywalking
+      - SW_AGENT_NAME=yudao-crm
+      - SW_AGENT_TRACE_IGNORE_PATH=Redisson/PING,/actuator/**,/admin/**
+      - SW_AGENT_COLLECTOR_BACKEND_SERVICES=${SKYWALKING_ADDR} # 请替换 your.skywalking.addr 为你的 skywalking 地址
+      - SPRING_PROFILES_ACTIVE=${PROFILES_ACTIVE} # 指定程序运行环境
+      - SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR=${NACOS_CONFIG_SERVER_ADDR} # 配置中心地址
+      - SPRING_CLOUD_NACOS_CONFIG_NAMESPACE=${NACOS_CONFIG_NAMESPACE} # 命名空间
+      - SPRING_CLOUD_NACOS_SERVER_ADDR=${NACOS_CONFIG_SERVER_ADDR}  # 注册中心地址
+      - SPRING_CLOUD_NACOS_DISCOVERY_NAMESPACE=${NACOS_CONFIG_NAMESPACE} # 命名空间
+    volumes:
+      - /docker/yudao-cloud/logs:/root/logs/
+      - ./middleware/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
+    healthcheck:
+      test: [ "CMD","curl","-f","http://localhost:48089" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: always
+    network_mode: host
+  yudao-ai:
+    image: yudao-module-ai-server:2.6.0
+    container_name: yudao-ai
+    environment:
+      - TZ=Asia/Shanghai # 配置程序默认时区为上海（中国标准时间）
+      - JAVA_TOOL_OPTIONS=-javaagent:/data/skywalking/skywalking-agent/skywalking-agent.jar # 配置skywalking
+      - SW_AGENT_NAME=yudao-ai
+      - SW_AGENT_TRACE_IGNORE_PATH=Redisson/PING,/actuator/**,/admin/**
+      - SW_AGENT_COLLECTOR_BACKEND_SERVICES=${SKYWALKING_ADDR} # 请替换 your.skywalking.addr 为你的 skywalking 地址
+      - SPRING_PROFILES_ACTIVE=${PROFILES_ACTIVE} # 指定程序运行环境
+      - SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR=${NACOS_CONFIG_SERVER_ADDR} # 配置中心地址
+      - SPRING_CLOUD_NACOS_CONFIG_NAMESPACE=${NACOS_CONFIG_NAMESPACE} # 命名空间
+      - SPRING_CLOUD_NACOS_SERVER_ADDR=${NACOS_CONFIG_SERVER_ADDR}  # 注册中心地址
+      - SPRING_CLOUD_NACOS_DISCOVERY_NAMESPACE=${NACOS_CONFIG_NAMESPACE} # 命名空间
+    volumes:
+      - /docker/yudao-cloud/logs:/root/logs/
+      - ./middleware/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
+    healthcheck:
+      test: [ "CMD","curl","-f","http://localhost:48090" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: always
+    network_mode: host
+  yudao-iot:
+    image: yudao-module-iot-server:2.6.0
+    container_name: yudao-iot
+    environment:
+      - TZ=Asia/Shanghai # 配置程序默认时区为上海（中国标准时间）
+      - JAVA_TOOL_OPTIONS=-javaagent:/data/skywalking/skywalking-agent/skywalking-agent.jar # 配置skywalking
+      - SW_AGENT_NAME=yudao-iot
+      - SW_AGENT_TRACE_IGNORE_PATH=Redisson/PING,/actuator/**,/admin/**
+      - SW_AGENT_COLLECTOR_BACKEND_SERVICES=${SKYWALKING_ADDR} # 请替换 your.skywalking.addr 为你的 skywalking 地址
+      - SPRING_PROFILES_ACTIVE=${PROFILES_ACTIVE} # 指定程序运行环境
+      - SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR=${NACOS_CONFIG_SERVER_ADDR} # 配置中心地址
+      - SPRING_CLOUD_NACOS_CONFIG_NAMESPACE=${NACOS_CONFIG_NAMESPACE} # 命名空间
+      - SPRING_CLOUD_NACOS_SERVER_ADDR=${NACOS_CONFIG_SERVER_ADDR}  # 注册中心地址
+      - SPRING_CLOUD_NACOS_DISCOVERY_NAMESPACE=${NACOS_CONFIG_NAMESPACE} # 命名空间
+    volumes:
+      - /docker/yudao-cloud/logs:/root/logs/
+      - ./middleware/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
+    healthcheck:
+      test: [ "CMD","curl","-f","http://localhost:48091" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: always
+    network_mode: host
+  yudao-product:
+    image: yudao-module-product-server:2.6.0
+    container_name: yudao-product
+    environment:
+      - TZ=Asia/Shanghai # 配置程序默认时区为上海（中国标准时间）
+      - JAVA_TOOL_OPTIONS=-javaagent:/data/skywalking/skywalking-agent/skywalking-agent.jar # 配置skywalking
+      - SW_AGENT_NAME=yudao-product
+      - SW_AGENT_TRACE_IGNORE_PATH=Redisson/PING,/actuator/**,/admin/**
+      - SW_AGENT_COLLECTOR_BACKEND_SERVICES=${SKYWALKING_ADDR} # 请替换 your.skywalking.addr 为你的 skywalking 地址
+      - SPRING_PROFILES_ACTIVE=${PROFILES_ACTIVE} # 指定程序运行环境
+      - SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR=${NACOS_CONFIG_SERVER_ADDR} # 配置中心地址
+      - SPRING_CLOUD_NACOS_CONFIG_NAMESPACE=${NACOS_CONFIG_NAMESPACE} # 命名空间
+      - SPRING_CLOUD_NACOS_SERVER_ADDR=${NACOS_CONFIG_SERVER_ADDR}  # 注册中心地址
+      - SPRING_CLOUD_NACOS_DISCOVERY_NAMESPACE=${NACOS_CONFIG_NAMESPACE} # 命名空间
+    volumes:
+      - /docker/yudao-cloud/logs:/root/logs/
+      - ./middleware/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
+    healthcheck:
+      test: [ "CMD","curl","-f","http://localhost:48100" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: always
+    network_mode: host
+  yudao-promotion:
+    image: yudao-module-promotion-server:2.6.0
+    container_name: yudao-promotion
+    environment:
+      - TZ=Asia/Shanghai # 配置程序默认时区为上海（中国标准时间）
+      - JAVA_TOOL_OPTIONS=-javaagent:/data/skywalking/skywalking-agent/skywalking-agent.jar # 配置skywalking
+      - SW_AGENT_NAME=yudao-promotion
+      - SW_AGENT_TRACE_IGNORE_PATH=Redisson/PING,/actuator/**,/admin/**
+      - SW_AGENT_COLLECTOR_BACKEND_SERVICES=${SKYWALKING_ADDR} # 请替换 your.skywalking.addr 为你的 skywalking 地址
+      - SPRING_PROFILES_ACTIVE=${PROFILES_ACTIVE} # 指定程序运行环境
+      - SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR=${NACOS_CONFIG_SERVER_ADDR} # 配置中心地址
+      - SPRING_CLOUD_NACOS_CONFIG_NAMESPACE=${NACOS_CONFIG_NAMESPACE} # 命名空间
+      - SPRING_CLOUD_NACOS_SERVER_ADDR=${NACOS_CONFIG_SERVER_ADDR}  # 注册中心地址
+      - SPRING_CLOUD_NACOS_DISCOVERY_NAMESPACE=${NACOS_CONFIG_NAMESPACE} # 命名空间
+    volumes:
+      - /docker/yudao-cloud/logs:/root/logs/
+      - ./middleware/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
+    healthcheck:
+      test: [ "CMD","curl","-f","http://localhost:48101" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: always
+    network_mode: host
+  yudao-trade:
+    image: yudao-module-trade-server:2.6.0
+    container_name: yudao-trade
+    environment:
+      - TZ=Asia/Shanghai # 配置程序默认时区为上海（中国标准时间）
+      - JAVA_TOOL_OPTIONS=-javaagent:/data/skywalking/skywalking-agent/skywalking-agent.jar # 配置skywalking
+      - SW_AGENT_NAME=yudao-trade
+      - SW_AGENT_TRACE_IGNORE_PATH=Redisson/PING,/actuator/**,/admin/**
+      - SW_AGENT_COLLECTOR_BACKEND_SERVICES=${SKYWALKING_ADDR} # 请替换 your.skywalking.addr 为你的 skywalking 地址
+      - SPRING_PROFILES_ACTIVE=${PROFILES_ACTIVE} # 指定程序运行环境
+      - SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR=${NACOS_CONFIG_SERVER_ADDR} # 配置中心地址
+      - SPRING_CLOUD_NACOS_CONFIG_NAMESPACE=${NACOS_CONFIG_NAMESPACE} # 命名空间
+      - SPRING_CLOUD_NACOS_SERVER_ADDR=${NACOS_CONFIG_SERVER_ADDR}  # 注册中心地址
+      - SPRING_CLOUD_NACOS_DISCOVERY_NAMESPACE=${NACOS_CONFIG_NAMESPACE} # 命名空间
+    volumes:
+      - /docker/yudao-cloud/logs:/root/logs/
+      - ./middleware/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
+    healthcheck:
+      test: [ "CMD","curl","-f","http://localhost:48102" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: always
+    network_mode: host
+  yudao-statistics:
+    image: yudao-module-statistics-server:2.6.0
+    container_name: yudao-statistics
+    environment:
+      - TZ=Asia/Shanghai # 配置程序默认时区为上海（中国标准时间）
+      - JAVA_TOOL_OPTIONS=-javaagent:/data/skywalking/skywalking-agent/skywalking-agent.jar # 配置skywalking
+      - SW_AGENT_NAME=yudao-statistics
+      - SW_AGENT_TRACE_IGNORE_PATH=Redisson/PING,/actuator/**,/admin/**
+      - SW_AGENT_COLLECTOR_BACKEND_SERVICES=${SKYWALKING_ADDR} # 请替换 your.skywalking.addr 为你的 skywalking 地址
+      - SPRING_PROFILES_ACTIVE=${PROFILES_ACTIVE} # 指定程序运行环境
+      - SPRING_CLOUD_NACOS_CONFIG_SERVER_ADDR=${NACOS_CONFIG_SERVER_ADDR} # 配置中心地址
+      - SPRING_CLOUD_NACOS_CONFIG_NAMESPACE=${NACOS_CONFIG_NAMESPACE} # 命名空间
+      - SPRING_CLOUD_NACOS_SERVER_ADDR=${NACOS_CONFIG_SERVER_ADDR}  # 注册中心地址
+      - SPRING_CLOUD_NACOS_DISCOVERY_NAMESPACE=${NACOS_CONFIG_NAMESPACE} # 命名空间
+    volumes:
+      - /docker/yudao-cloud/logs:/root/logs/
+      - ./middleware/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
+    healthcheck:
+      test: [ "CMD","curl","-f","http://localhost:48103" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+    restart: always
+    network_mode: host
