@@ -33,6 +33,11 @@ services:
       - ./middleware/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
     restart: always
     network_mode: host
+    # 增加内存限制1G
+    deploy:
+      resources:
+        limits:
+          memory: 1G
   yudao-system:
     image: yudao-module-system-server:2.6.0
     container_name: yudao-system
@@ -52,6 +57,11 @@ services:
       - ./middleware/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
     restart: always
     network_mode: host
+    # 增加内存限制1G
+    deploy:
+      resources:
+        limits:
+          memory: 1G
   yudao-infra:
     image: yudao-module-infra-server:2.6.0
     container_name: yudao-infra
@@ -71,6 +81,11 @@ services:
       - ./middleware/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
     restart: always
     network_mode: host
+    # 增加内存限制1G
+    deploy:
+      resources:
+        limits:
+          memory: 1G
   yudao-bpm:
     image: yudao-module-bpm-server:2.6.0
     container_name: yudao-bpm
@@ -90,6 +105,11 @@ services:
       - ./middleware/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
     restart: always
     network_mode: host
+    # 增加内存限制1G
+    deploy:
+      resources:
+        limits:
+          memory: 1G
   yudao-report:
     image: yudao-module-report-server:2.6.0
     container_name: yudao-report
@@ -109,6 +129,11 @@ services:
       - ./middleware/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
     restart: always
     network_mode: host
+    # 增加内存限制1G
+    deploy:
+      resources:
+        limits:
+          memory: 1G
   yudao-pay:
     image: yudao-module-pay-server:2.6.0
     container_name: yudao-pay
@@ -128,6 +153,11 @@ services:
       - ./middleware/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
     restart: always
     network_mode: host
+    # 增加内存限制1G
+    deploy:
+      resources:
+        limits:
+          memory: 1G
   yudao-mp:
     image: yudao-module-mp-server:2.6.0
     container_name: yudao-mp
@@ -147,6 +177,11 @@ services:
       - ./middleware/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
     restart: always
     network_mode: host
+    # 增加内存限制1G
+    deploy:
+      resources:
+        limits:
+          memory: 1G
   yudao-member:
     image: yudao-module-member-server:2.6.0
     container_name: yudao-member
@@ -166,6 +201,11 @@ services:
       - ./middleware/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
     restart: always
     network_mode: host
+    # 增加内存限制1G
+    deploy:
+      resources:
+        limits:
+          memory: 1G
   yudao-erp:
     image: yudao-module-erp-server:2.6.0
     container_name: yudao-erp
@@ -185,6 +225,11 @@ services:
       - ./middleware/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
     restart: always
     network_mode: host
+    # 增加内存限制1G
+    deploy:
+      resources:
+        limits:
+          memory: 1G
   yudao-crm:
     image: yudao-module-crm-server:2.6.0
     container_name: yudao-crm
@@ -204,6 +249,11 @@ services:
       - ./middleware/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
     restart: always
     network_mode: host
+    # 增加内存限制1G
+    deploy:
+      resources:
+        limits:
+          memory: 1G
   yudao-ai:
     image: yudao-module-ai-server:2.6.0
     container_name: yudao-ai
@@ -223,6 +273,11 @@ services:
       - ./middleware/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
     restart: always
     network_mode: host
+    # 增加内存限制1G
+    deploy:
+      resources:
+        limits:
+          memory: 1G
   yudao-iot:
     image: yudao-module-iot-server:2.6.0
     container_name: yudao-iot
@@ -242,6 +297,11 @@ services:
       - ./middleware/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
     restart: always
     network_mode: host
+    # 增加内存限制1G
+    deploy:
+      resources:
+        limits:
+          memory: 1G
   yudao-product:
     image: yudao-module-product-server:2.6.0
     container_name: yudao-product
@@ -261,6 +321,11 @@ services:
       - ./middleware/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
     restart: always
     network_mode: host
+    # 增加内存限制1G
+    deploy:
+      resources:
+        limits:
+          memory: 1G
   yudao-promotion:
     image: yudao-module-promotion-server:2.6.0
     container_name: yudao-promotion
@@ -280,6 +345,11 @@ services:
       - ./middleware/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
     restart: always
     network_mode: host
+    # 增加内存限制1G
+    deploy:
+      resources:
+        limits:
+          memory: 1G
   yudao-trade:
     image: yudao-module-trade-server:2.6.0
     container_name: yudao-trade
@@ -299,6 +369,11 @@ services:
       - ./middleware/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
     restart: always
     network_mode: host
+    # 增加内存限制1G
+    deploy:
+      resources:
+        limits:
+          memory: 1G
   yudao-statistics:
     image: yudao-module-statistics-server:2.6.0
     container_name: yudao-statistics
@@ -318,3 +393,8 @@ services:
       - ./middleware/skywalking/skywalking-agent:/data/skywalking/skywalking-agent
     restart: always
     network_mode: host
+    # 增加内存限制1G
+    deploy:
+      resources:
+        limits:
+          memory: 1G

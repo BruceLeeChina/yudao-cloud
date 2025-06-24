@@ -428,9 +428,7 @@ node -v
 npm -v
 
 npm config set registry https://registry.npmmirror.com
-npm install -g typescript yarn  # 全局安装 TypeScript 和 Yarn
-# 全局安装 uni-app 脚手架
-npm install -g @dcloudio/vue-cli
+npm install -g typescript yarn vite  # 全局安装 TypeScript 和 Yarn
 
 打包路径： /opt/yudao/services/jenkins/yudao-cloud/yudao-ui/yudao-ui-admin-vue3/
 # 安装 pnpm，提升依赖的安装速度
@@ -450,12 +448,12 @@ cp -r /opt/yudao/services/jenkins/yudao-cloud/yudao-ui/yudao-ui-admin-vue3/dist/
 打包路径： /opt/yudao/services/jenkins/yudao-cloud/yudao-ui/yudao-mall-uniapp/
 # 安装 npm 依赖
 npm config set registry https://registry.npmmirror.com
-npm i
-# 【非必须】如果报错，可以在尝试，执行下如下命令
-npm install --legacy-peer-deps
+npm install -g pnpm
+# 安装依赖
+pnpm install
 # 启动服务 构建服务
 # 打包 H5
-npm run build:h5
+pnpm run build:h5
 # 打包小程序（如微信）
 npm run build:mp-weixin
 

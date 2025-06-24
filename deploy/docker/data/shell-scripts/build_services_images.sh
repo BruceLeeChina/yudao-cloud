@@ -101,6 +101,20 @@ show_help() {
   done
 }
 
+# 配置文件替换函数
+replace_config() {
+  echo "🔧 开始替换配置文件中的服务地址..."
+  if find /opt/yudao/services/ -type f -name "*.yaml" -exec sed -i 's#400-infra\.server\.iocoder\.cn#192.168.56.14#g' {} + ; then
+    echo "✅ 服务地址替换完成！"
+    # 验证替换结果
+    echo "🔍 验证替换结果："
+    grep -rn "192.168.56.14" /opt/yudao/services/ | head -n 3
+  else
+    echo "❌ 配置文件替换失败！"
+    exit 1
+  fi
+}
+
 # 主执行流程
 if [ $# -eq 0 ]; then
   show_help
@@ -109,6 +123,7 @@ fi
 
 # 执行更新和编译
 update_code
+## replace_config    # 新增的配置文件替换操作
 build_project
 
 # 处理用户输入
