@@ -153,6 +153,8 @@ Hive on Spark测试：
 （1）启动hive客户端
 hive
 （2）创建一张测试表
+hive (default)> create database gmall;
+hive (default)> use gmall;
 hive (default)> create table student(id int, name string);
 （3）通过insert测试效果
 hive (default)> insert into table student values(1,'abc');
@@ -177,6 +179,79 @@ start-yarn.sh
 
 ## 14. 数仓开发工具可选用DBeaver或者DataGrip。两者都需要用到JDBC协议连接到Hive，故需要启动HiveServer2
 hiveserver2
+连接 IP:192.168.56.100 端口:10000  用户名：atguigu 密码：atguigu
+
+## 15.开发模拟数据
+模拟数据准备
+通常企业在开始搭建数仓时，业务系统中会存在历史数据，一般是业务数据库存在历史数据，而用户行为日志无历史数据。假定数仓上线的日期为2022-06-08，为模拟真实场景，需准备以下数据。
+注：在执行以下操作之前，先将HDFS上/origin_data路径下之前的数据删除。
+1）启动采集通道
+命令如下。
+cluster.sh start
+停止Maxwell。
+mxw.sh stop
+停止Maxwell
+2）数据准备
+（1）生成模拟数据
+① 修改hadoop100节点的/opt/module/applog/application.yml文件，将mock.date，mock.clear，mock.clear.user，mock.new.user，mock.log.db.enable五个参数调整为如下的值。
+#业务日期
+mock.date: "2025-06-25"
+#是否重置业务数据
+mock.clear.busi: 1
+#是否重置用户数据
+mock.clear.user: 1
+# 批量生成新用户数量
+mock.new.user: 100
+# 日志是否写入数据库一份  写入z_log表中
+mock.log.db.enable: 0
+② 执行数据生成脚本，生成第一天2025-06-25的历史数据。
+lg.sh
+③ 修改/opt/module/applog/application.properties文件，将mock.date、mock.clear，mock.clear.user，mock.new.user四个参数调整为如图所示的值。
+#业务日期
+mock.date: "2025-06-26"
+#是否重置业务数据
+mock.clear.busi: 0
+#是否重置用户数据
+mock.clear.user: 0
+# 批量生成新用户
+mock.new.user: 0
+④ 执行数据生成脚本，生成第二天2025-06-26的历史数据。
+lg.sh
+⑤ 之后只修改/opt/module/applog/application.properties文件中的mock.date参数，依次改为2022-06-27，2022-06-28，并分别生成对应日期的数据。
+⑥ 删除/origin_data/gmall/log目录，将⑤中提到的参数修改为2025-06-29，并生成当日模拟数据。
+（2）全量表同步
+① 执行全量表同步脚本
+mysql_to_hdfs_full.sh all 2025-06-29
+② 观察HDFS上是否出现全量表数据
+（3）增量表首日全量同步
+① 清除Maxwell断点记录
+由于Maxwell支持断点续传，而上述重新生成业务数据的过程，会产生大量的binlog操作日志，这些日志我们并不需要。故此处需清除Maxwell的断点记录，令其从binlog最新的位置开始采集。
+清空Maxwell数据库，相当于初始化Maxwell。
+mysql> 
+drop table maxwell.bootstrap;
+drop table maxwell.columns;
+drop table maxwell.databases;
+drop table maxwell.heartbeats;
+drop table maxwell.positions;
+drop table maxwell.schemas;
+drop table maxwell.tables;
+② 修改Maxwell配置文件中的mock_date参数
+vi /opt/module/maxwell/config.properties
+mock_date=2025-06-29
+③ 启动Maxwell
+mxw.sh start
+④ 执行增量表首日全量同步脚本
+mysql_to_kafka_inc_init.sh all
+⑤ 观察HDFS上是否出现增量表数据
+http://192.168.56.100:9870/explorer.html#/origin_data/gmall/db
+
+## 16. ODS/DWD/DIM/DWS/ADS 数据装载与计算
+建库语句和建表语句、定期执行脚本
+
+## 17. 数据导出
+DataX --> Mysql
+
+## 18. DolphinScheduler 部署任务调度
 
 
 
