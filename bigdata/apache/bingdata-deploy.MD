@@ -1,4 +1,4 @@
-
+################################## 离线计算#######################################
 模拟数据：/opt/module/applog 配置文件 application.yml 
 lg.sh test 100
 
@@ -252,12 +252,103 @@ http://192.168.56.100:9870/explorer.html#/origin_data/gmall/db
 DataX --> Mysql
 
 ## 18. DolphinScheduler 部署任务调度
+hadoop100	master、worker
+hadoop101	worker
+hadoop102	worker
 
+Mysql创建源数据库：
+创建元数据库及用户
+DolphinScheduler 元数据存储在关系型数据库中，故需创建相应的数据库和用户。
+（1）创建数据库
+mysql> CREATE DATABASE dolphinscheduler DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_general_ci;
+（2）创建用户
+mysql> CREATE USER 'dolphinscheduler'@'%' IDENTIFIED BY 'dolphinscheduler';
+注： 若出现以下错误信息，表明新建用户的密码过于简单。
+ERROR 1819 (HY000): Your password does not satisfy the current policy requirements
+可提高密码复杂度或者执行以下命令降低MySQL密码强度级别。
+mysql> set global validate_password_policy=0;
+mysql> set global validate_password_length=4;
+（3）赋予用户相应权限
+mysql> GRANT ALL PRIVILEGES ON dolphinscheduler.* TO 'dolphinscheduler'@'%';
+mysql> flush privileges;
 
+初始化数据库
+（1）拷贝MySQL驱动到DolphinScheduler的解压目录下的lib中，要求使用 MySQL JDBC Driver 8.0.31。
+[atguigu@hadoop100 apache-dolphinscheduler-2.0.5-bin]$ cp /opt/software/mysql/mysql-connector-j-8.0.31.jar /opt/software/apache-dolphinscheduler-2.0.5-bin/lib/
+（2）执行数据库初始化脚本
+数据库初始化脚本位于DolphinScheduler解压目录下的script目录中，即/opt/software/apache-dolphinscheduler-2.0.5-bin/script/。
+[atguigu@hadoop100 apache-dolphinscheduler-2.0.5-bin]$ /opt/software/apache-dolphinscheduler-2.0.5-bin/script/create-dolphinscheduler.sh
 
+启停：
+/opt/module/dolphinscheduler/bin/start-all.sh
+/opt/module/dolphinscheduler/bin/stop-all.sh
 
+访问DolphinScheduler UI
+DolphinScheduler UI地址为 http://192.168.56.100:12345/dolphinscheduler
+初始用户的用户名为：admin，密码为 dolphinscheduler123
 
+################################## 实时计算 #######################################
+## 1. Flink
+节点服务器	hadoop100	                hadoop101	          hadoop102
+角色	        JobManager、TaskManager	    TaskManager	          TaskManager
+启动：
+/opt/module/flink-1.17.1/bin/start-cluster.sh
+访问测试：
+http://192.168.56.100:8081
 
+YARN运行模式：
 
+## 2. HBase
+/opt/module/hbase/bin/start-hbase.sh
+/opt/module/hbase/bin/stop-hbase.sh
+访问测试：http://192.168.56.100:16010
 
+## 3.Redis
+1）配置： ~/my_redis.conf
+/usr/local/bin/redis-server ~/my_redis.conf
+/usr/local/bin/redis-cli
+redis-cli shutdown
+2）注销 bind 配置项
+# bind 127.0.0.1
+3）修改 protected-mode
+protected-mode no
 
+## 4.Doris DWS层写入 Doris
+hadoop100	        hadoop101	        hadoop102
+FE（LEADER）      	FE（FOLLOWER）	    FE（FOLLOWER）
+BE	                BE	                BE
+
+启动hadoop100的FE
+/opt/module/doris2.1/fe/bin/start_fe.sh --daemon
+/opt/module/doris2.1/fe/bin/stop_fe.sh
+mysql -h hadoop100 -P 9030 -uroot
+默认root无密码，通过以下命令修改root密码。
+SET PASSWORD FOR 'root' = PASSWORD('000000');
+添加BE（BE的心跳端口默认9050）
+ALTER SYSTEM ADD BACKEND "hadoop100:9050";
+ALTER SYSTEM ADD BACKEND "hadoop101:9050";
+ALTER SYSTEM ADD BACKEND "hadoop102:9050";
+查看BE状态
+SHOW PROC '/backends' \G;
+
+192.168.56.100/101/102
+1）启动BE（每个节点）
+/opt/module/doris2.1/be/bin/start_be.sh --daemon
+/opt/module/doris2.1/be/bin/stop_be.sh
+2）查看BE状态
+mysql -h hadoop100 -P 9030 -uroot -p
+SHOW PROC '/backends' \G;
+
+# 5. 配置表 Flink CDC
+读取动态配置
+
+# 6.Sugar展示
+ADS 层 Springboot接口提供数据
+
+# 7.StreamingPark 部署
+/opt/module/streampark_2.12-2.1.4/conf/application.yml
+/opt/module/streampark_2.12-2.1.4/conf/application-mysql.yml
+
+/opt/module/streampark_2.12-2.1.4/bin/startup.sh
+访问web页面:192.168.56.100:10000（默认用户名/密码：admin/streampark），可以改成简体中文：
+/opt/module/streampark_2.12-2.1.4/bin/shutdown.sh
