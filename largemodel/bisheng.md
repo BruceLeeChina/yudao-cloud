@@ -37,6 +37,7 @@ docker-compose -f docker-compose.yml -p bisheng up -d
 
 * 打开浏览器，访问 `http://192.168.56.17:3001`。
 * 首次注册的用户将成为系统管理员 ([trendshift.io][1])。
+* 用户名：admin@163.com 密码：Admin@163.com
 
 docker exec -it bisheng-mysql /bin/bash
 mysql -u root -p

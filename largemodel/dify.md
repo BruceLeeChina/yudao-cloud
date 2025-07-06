@@ -7,3 +7,5 @@ cp .env.example .env
 docker-compose -f docker-compose.yaml -p dify up -d
 
 http://192.168.56.17:8080
+用户名：admin@163.com 
+密码：Admin@163.com
